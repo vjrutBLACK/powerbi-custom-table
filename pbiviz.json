@@ -1,0 +1,25 @@
+{
+    "visual": {
+        "name": "tableExample",
+        "displayName": "tableExample",
+        "guid": "tableExample04E649621A964F0491F29D514385D7FC",
+        "visualClassName": "Visual",
+        "version": "1.0.0",
+        "description": "Custom Table",
+        "supportUrl": "https://community.powerbi.com",
+        "gitHubUrl": ""
+    },
+    "apiVersion": "3.2.0",
+    "author": {
+        "name": "Microsoft",
+        "email": "pbicvsupport@microsoft.com"
+    },
+    "assets": {
+        "icon": "assets/icon.png"
+    },
+    "externalJS": null,
+    "style": "style/visual.less",
+    "capabilities": "capabilities.json",
+    "dependencies": null,
+    "stringResources": []
+}
