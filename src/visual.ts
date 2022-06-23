@@ -66,6 +66,9 @@ export class Visual implements IVisual {
                 errorMsg = "Error parsing table definition. Enter edit mode and correct the error.";
             }
         }
+
+        
+
         /** Clear down existing plot */
             this.container.selectAll('*').remove();
 
@@ -82,15 +85,50 @@ export class Visual implements IVisual {
                 console.log('Test 1 FAILED. No data to draw table.');
                 return;
             }
+
         
         /** If we get this far, we can trust that we can work with the data! */
             let table = dataViews[0].table;
+            const hightlightTextColor = this.settings.highlightConfig.textColor
+            const hightlightFontSize = this.settings.highlightConfig.fontSize
+            const hightlightFontFamily = this.settings.highlightConfig.fontFamily
+
+                            
+            const customizedTextByConfigurations =  (text: string): string => {
+                return  `<span style="font-family: ${hightlightFontFamily};color: ${hightlightTextColor}; font-size:${hightlightFontSize}px">${text}</span>`
+            }
 
         /** Add table heading row and columns */
+            
+            let highlightTextColumnIndex: number = -1;
+            let highlightTextPosition: number = -1;
+            let highlightTextLength: number = -1;
+            let contentColumnIndex: number = -1;
+            
             let tHead = this.container
                 .append('tr');
+            
             table.columns.forEach(
-                (col) => {
+                (col, cidx) => {
+                    switch (col.displayName) {
+                        case '正規語': {
+                            highlightTextColumnIndex = cidx;
+                            break;
+                        }
+                        case '文字位置': {
+                            highlightTextPosition = cidx;
+                            break;
+                        }
+                        case '文字数': {
+                            highlightTextLength = cidx;
+                            break;
+                        }
+                        case '文': {
+                            contentColumnIndex = cidx;
+                            break;
+                        }
+                    }
+                     
                     tHead
                         .append('th')
                             .text(col.displayName);
@@ -98,15 +136,30 @@ export class Visual implements IVisual {
             );
 
         /** Now add rows and columns for each row of data */
-            table.rows.forEach(
+
+    
+        const isShowHighlight: boolean = [highlightTextColumnIndex , highlightTextPosition, highlightTextLength].every(el => el > -1)
+        
+
+        table.rows.forEach(
                 (row) => {
                     let tRow = this.container
                         .append('tr');
                     row.forEach(
-                        (col) => {
+                        (col, cidx) => {
+                            let colContent = col.toString()
+                            console.log(typeof row)
+                            if (isShowHighlight && cidx === contentColumnIndex) {
+                                const hightLightText = row[highlightTextColumnIndex].toString()
+                                const splitContent = this.splitContentWithCondition(colContent, hightLightText, Number(row[highlightTextPosition]), Number(row[highlightTextLength]))
+                                const customizedHighlightText = customizedTextByConfigurations(hightLightText)
+                                
+                                colContent = splitContent.length >= 2 ? this.joinHighlightText(splitContent, customizedHighlightText) : colContent
+                     
+                            }
                             tRow
                                 .append('td')
-                                    .text(col.toString());
+                                    .html(colContent);
                         }
                     )
                 }
@@ -114,6 +167,18 @@ export class Visual implements IVisual {
             console.log('Table rendered!');
         
     }
+
+    private splitContentWithCondition = (content: string, keyword: string, index: number, length: number): Array<String> =>{
+        let result = []
+        if (content.slice(index, index + length) === keyword) {
+            result.push(content.slice(0, index))
+            result.push(content.slice(index + length, content.length))
+        }
+        
+        return result
+    }
+
+    private joinHighlightText = (arrayString: String[], highlightText: string): string => `${arrayString[0]}${highlightText}${arrayString[1]}`
 
     public getSettings(): VisualSettings {
         return this.settings;
