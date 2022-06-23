@@ -148,7 +148,6 @@ export class Visual implements IVisual {
                     row.forEach(
                         (col, cidx) => {
                             let colContent = col.toString()
-                            console.log(typeof row)
                             if (isShowHighlight && cidx === contentColumnIndex) {
                                 const hightLightText = row[highlightTextColumnIndex].toString()
                                 const splitContent = this.splitContentWithCondition(colContent, hightLightText, Number(row[highlightTextPosition]), Number(row[highlightTextLength]))
