@@ -95,7 +95,7 @@ export class Visual implements IVisual {
 
                             
             const customizedTextByConfigurations =  (text: string): string => {
-                return  `<span style="font-family: ${hightlightFontFamily};color: ${hightlightTextColor}; font-size:${hightlightFontSize}px">${text}</span>`
+                return  `<span style="font-weight: 700;font-family: ${hightlightFontFamily};color: ${hightlightTextColor}; font-size:${hightlightFontSize}px">${text}</span>`
             }
 
         /** Add table heading row and columns */
