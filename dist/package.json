@@ -8,7 +8,7 @@
             "file": "resources/tableExample04E649621A964F0491F29D514385D7FC.pbiviz.json"
         }
     ],
-    "visual": {"name":"Customized Table","displayName":"Customized Table","guid":"tableExample04E649621A964F0491F29D514385D7FC","visualClassName":"Visual","version":"1.0.0","description":"Custom Table","supportUrl":"https://community.powerbi.com","gitHubUrl":""},
+    "visual": {"name":"Table Plus","displayName":"Table Plus","guid":"tableExample04E649621A964F0491F29D514385D7FC","visualClassName":"Visual","version":"1.0.0","description":"Custom Table","supportUrl":"https://community.powerbi.com","gitHubUrl":""},
     "metadata": {
         "pbivizjson": {
             "resourceId": "rId0"
