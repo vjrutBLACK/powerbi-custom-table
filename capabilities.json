@@ -10,6 +10,58 @@
         "default": { }
         },
     "objects": { 
+        "horizontalGridConfig": {
+            "displayName": "Horizontal Grid",
+            "properties": {
+                "horizontalGridlines": {
+                    "displayName": "Horizontal gridlines",
+                    "description": "Turn on / off horizontal gridlines",
+                    "type": {"bool": true}
+                },
+                "horizontalGridlinesColor": {
+                    "displayName": "Horizontal gridlines color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }   
+                },
+                "horizontalGridlinesWidth": {
+                    "displayName": "Horizontal gridlines width",
+                    "type": {
+                        "numeric": true
+                    }   
+                }
+            }
+        },
+        "verticalGridConfig": {
+            "displayName": "Vertical Grid",
+            "properties": {
+                "verticalGridlines": {
+                    "displayName": "Vertical gridlines",
+                    "description": "Turn on / off Vertical gridlines",
+                    "type": {"bool": true}
+                },
+                "verticalGridlinesColor": {
+                    "displayName": "Vertical gridlines color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }   
+                },
+                "verticalGridlinesWidth": {
+                    "displayName": "Vertical gridlines width",
+                    "type": {
+                        "numeric": true
+                    }   
+                }
+            }
+        },
         "valuesConfig": {
             "displayName": "Values",
             "properties": {

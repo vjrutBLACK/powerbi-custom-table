@@ -59,7 +59,6 @@ export class Visual implements IVisual {
     }
 
     public update(options: VisualUpdateOptions) {
-        console.log(this.target)
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
         var errorMsg = '';
         if (this.settings.dataPoint.tableConfiguration.trim().length > 0) {
@@ -154,8 +153,7 @@ export class Visual implements IVisual {
         table.rows.forEach(
                 (row, idx) => {
                     let tRow = this.container
-                        .append('tr')
-    ;
+                        .append('tr');
 
                     tRow
                         .style('backgroundColor', backgroundColor)
@@ -196,8 +194,35 @@ export class Visual implements IVisual {
                 }
             );
 
-
             if (isWrappedText) $(this.target).find("td").css('white-space','normal')
+            if (this.settings.horizontalGridConfig.horizontalGridlines) {
+                $(this.target).find("td").addClass('removed-horizontal-lines')
+                $(this.target).find("th").addClass('removed-horizontal-lines')
+            } else {
+                const horCss = `${this.settings.horizontalGridConfig.horizontalGridlinesWidth}px solid ${this.settings.horizontalGridConfig.horizontalGridlinesColor}`
+                $(this.target).find("td").css({
+                    'border-bottom': horCss,
+                    'border-top': horCss,
+                })
+                $(this.target).find("th").css({
+                    'border-bottom': horCss,
+                    'border-top': horCss,
+                })
+            }
+            if (this.settings.verticalGridConfig.verticalGridlines) {
+                $(this.target).find("td").addClass('removed-vertical-lines')
+                $(this.target).find("th").addClass('removed-vertical-lines')
+            } else {
+                const verCss = `${this.settings.verticalGridConfig.verticalGridlinesWidth}px solid ${this.settings.verticalGridConfig.verticalGridlinesColor}`
+                $(this.target).find("td").css({
+                    'border-right': verCss,
+                    'border-left': verCss,
+                })
+                $(this.target).find("th").css({
+                    'border-right': verCss,
+                    'border-left': verCss,
+                })
+            }
             console.log('Table rendered!');
         
     }
