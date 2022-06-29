@@ -10,12 +10,45 @@
         "default": { }
         },
     "objects": { 
-        "highlightConfig": {
-            "displayName": "Highlight Text Config",
+        "valuesConfig": {
+            "displayName": "Values",
             "properties": {
                 "textColor": {
                     "displayName": "Color",
-                    "description": "The highlight color.",
+                    "description": "The main text color.",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "backgroundColor": {
+                    "displayName": "Background Color",
+                    "description": "The background main text color.",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "alterTextColor": {
+                    "displayName": "Alternate text color",
+                    "description": "The alternate text color.",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "alterBackgroundColor": {
+                    "displayName": "Alternate background color",
+                    "description": "The background of alternate text color.",
                     "type": {
                         "fill": {
                             "solid": {
@@ -134,11 +167,40 @@
                             }
                         ]
                     }
+                },
+                "textWrap": {
+                    "displayName": "No wrap",
+                    "description": "The wrapping long text",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "bold": {
+                    "displayName": "Bold",
+                    "description": "Bold text",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "ilatic": {
+                    "displayName": "Italic",
+                    "description": "Italic text",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underline": {
+                    "displayName": "Underline",
+                    "description": "Underline text",
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         }
         
     },
+    "supportsHighlight": true,
     "dataViewMappings": [
         {
             "table": {

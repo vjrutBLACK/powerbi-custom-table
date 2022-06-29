@@ -40,8 +40,10 @@ import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 
 import { VisualSettings } from "./settings";
 import * as d3select from 'd3-selection';
+import $ from 'jquery';
 
 export class Visual implements IVisual {
+    private target: HTMLElement;
     private settings: VisualSettings;
     private container: d3.Selection<any, any, any, any>;
     private host: IVisualHost;
@@ -50,12 +52,14 @@ export class Visual implements IVisual {
     constructor(options: VisualConstructorOptions) {
         console.log('Visual constructor', options);
         /** Visual container */
+        this.target = options.element;
             this.container = d3select.select(options.element)
                 .append('div')
                     .append('table');
     }
 
     public update(options: VisualUpdateOptions) {
+        console.log(this.target)
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
         var errorMsg = '';
         if (this.settings.dataPoint.tableConfiguration.trim().length > 0) {
@@ -132,7 +136,7 @@ export class Visual implements IVisual {
                     tHead
                         .append('th')
                             .text(col.displayName);
-                }
+                }   
             );
 
         /** Now add rows and columns for each row of data */
@@ -140,11 +144,30 @@ export class Visual implements IVisual {
     
         const isShowHighlight: boolean = [highlightTextColumnIndex , highlightTextPosition, highlightTextLength].every(el => el > -1)
         
+        const alterTextColor = this.settings.valuesConfig.alterTextColor
+        const textColor = this.settings.valuesConfig.textColor
+        const backgroundColor = this.settings.valuesConfig.backgroundColor
+        const alterBackgroundColor = this.settings.valuesConfig.alterBackgroundColor
+        const isWrappedText = this.settings.valuesConfig.textWrap
+
 
         table.rows.forEach(
-                (row) => {
+                (row, idx) => {
                     let tRow = this.container
-                        .append('tr');
+                        .append('tr')
+    ;
+
+                    tRow
+                        .style('backgroundColor', backgroundColor)
+                        .style('text', textColor)
+                        .style('font-weight', this.settings.valuesConfig.bold ? 700 : 500)
+                        .style('font-style', this.settings.valuesConfig.ilatic ? 'italic' : 'unset')
+                        .style('text-decoration', this.settings.valuesConfig.underline ? 'underline' : 'none');
+                    if(idx % 2 == 1) {
+                        tRow
+                            .style('backgroundColor', alterBackgroundColor)
+                            .style('text', alterTextColor);
+                    }
                     row.forEach(
                         (col, cidx) => {
                             let colContent = col.toString()
@@ -159,10 +182,22 @@ export class Visual implements IVisual {
                             tRow
                                 .append('td')
                                     .html(colContent);
+                            tRow
+                                .style('background-color', backgroundColor)
+                                .style('color', textColor);
+                               
+                            if(idx % 2 === 1) {
+                                tRow
+                                    .style('background-color', alterBackgroundColor)
+                                    .style('color', alterTextColor);
+                            }
                         }
                     )
                 }
             );
+
+
+            if (isWrappedText) $(this.target).find("td").css('white-space','normal')
             console.log('Table rendered!');
         
     }
