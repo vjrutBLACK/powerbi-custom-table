@@ -195,7 +195,7 @@ export class Visual implements IVisual {
             );
 
             if (isWrappedText) $(this.target).find("td").css('white-space','normal')
-            if (!this.settings.horizontalGridConfig.horizontalGridlines) {
+            if (!this.settings.horizontalGridConfig.show) {
                 $(this.target).find("td").addClass('removed-horizontal-lines')
                 $(this.target).find("th").addClass('removed-horizontal-lines')
             } else {
@@ -209,7 +209,7 @@ export class Visual implements IVisual {
                     'border-top': horCss,
                 })
             }
-            if (!this.settings.verticalGridConfig.verticalGridlines) {
+            if (!this.settings.verticalGridConfig.show) {
                 $(this.target).find("td").addClass('removed-vertical-lines')
                 $(this.target).find("th").addClass('removed-vertical-lines')
             } else {

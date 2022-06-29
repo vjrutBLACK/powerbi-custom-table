@@ -42,12 +42,12 @@ export class ValuesConfig {
 }
 
 export class HorizontalGridConfig {
-    public horizontalGridlines: boolean = true;
+    public show: boolean = true;
     public horizontalGridlinesWidth: number = 1;
     public horizontalGridlinesColor: string = "#09124F";
 }
 export class VerticalGridConfig {
-    public verticalGridlines: boolean = true;
+    public show: boolean = true;
     public verticalGridlinesWidth: number = 1;
     public verticalGridlinesColor: string = "#09124F";
 }

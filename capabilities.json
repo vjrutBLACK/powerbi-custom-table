@@ -13,7 +13,7 @@
         "horizontalGridConfig": {
             "displayName": "Horizontal Grid",
             "properties": {
-                "horizontalGridlines": {
+                "show": {
                     "displayName": "Horizontal gridlines",
                     "description": "Turn on / off horizontal gridlines",
                     "type": {"bool": true}
@@ -39,7 +39,7 @@
         "verticalGridConfig": {
             "displayName": "Vertical Grid",
             "properties": {
-                "verticalGridlines": {
+                "show": {
                     "displayName": "Vertical gridlines",
                     "description": "Turn on / off Vertical gridlines",
                     "type": {"bool": true}
