@@ -39,8 +39,11 @@ import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 
 import { VisualSettings } from "./settings";
+// import { IGridBorderConfig } from "/models";
 import * as d3select from 'd3-selection';
 import $ from 'jquery';
+import { cloneDeep } from 'lodash';
+
 
 export class Visual implements IVisual {
     private target: HTMLElement;
@@ -49,14 +52,18 @@ export class Visual implements IVisual {
     private host: IVisualHost;
     private tableDefinition: any;
 
+    
     constructor(options: VisualConstructorOptions) {
         console.log('Visual constructor', options);
+
         /** Visual container */
         this.target = options.element;
             this.container = d3select.select(options.element)
                 .append('div')
                     .append('table');
+
     }
+
 
     public update(options: VisualUpdateOptions) {
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
@@ -70,6 +77,88 @@ export class Visual implements IVisual {
             }
         }
 
+
+        // if (this.settings.gridBorder.section === currentGridBorderSection) {
+
+        //     console.log('true')
+
+        //     switch (this.settings.gridBorder.section) {
+        //         case 'all': {
+        //             console.log('all : ', allBorder )
+        //             allBorder.topBorder = this.settings.gridBorder.topBorder;
+        //             allBorder.botBorder = this.settings.gridBorder.botBorder;
+        //             allBorder.rightBorder = this.settings.gridBorder.rightBorder;
+        //             allBorder.leftBorder = this.settings.gridBorder.leftBorder;
+        //             console.log(allBorder)
+        //             break;
+        //         }
+        //         case 'column_header': {
+        //             console.log('header')
+        //             console.log('hed top:', this.settings.gridBorder.topBorder)
+        //             columnHeader.topBorder = this.settings.gridBorder.topBorder;
+        //             columnHeader.botBorder = this.settings.gridBorder.botBorder;
+        //             columnHeader.rightBorder = this.settings.gridBorder.rightBorder;
+        //             columnHeader.leftBorder = this.settings.gridBorder.leftBorder;
+        //             console.log(columnHeader)
+
+        //             break;
+        //         }
+        //         case 'value_section': {
+        //             console.log('value_section : ', valueSection)
+        //             valueSection.topBorder = this.settings.gridBorder.topBorder;
+        //             valueSection.botBorder = this.settings.gridBorder.botBorder;
+        //             valueSection.rightBorder = this.settings.gridBorder.rightBorder;
+        //             valueSection.leftBorder = this.settings.gridBorder.leftBorder;
+        //             console.log(valueSection)
+
+        //             break;
+        //         }
+        //     }
+        
+        // } else {
+        //         console.log('differ')
+        //     switch (this.settings.gridBorder.section) {
+        //         case 'all': {
+        //             console.log('bind to all', allBorder)
+        //             this.settings.gridBorder.topBorder = allBorder.topBorder ;
+        //             this.settings.gridBorder.botBorder = allBorder.botBorder ;
+        //             this.settings.gridBorder.leftBorder = allBorder.leftBorder ;
+        //             this.settings.gridBorder.rightBorder = allBorder.rightBorder ;
+        //             console.log('final :', this.settings.gridBorder)
+
+        //             break;
+        //         }
+        //         case 'column_header': {
+        //             console.log('bind to column_header', columnHeader)
+
+        //             this.settings.gridBorder.topBorder = columnHeader.topBorder ;
+        //             this.settings.gridBorder.botBorder = columnHeader.botBorder ;
+        //             this.settings.gridBorder.leftBorder = columnHeader.leftBorder ;
+        //             this.settings.gridBorder.rightBorder = columnHeader.rightBorder ;
+        //             console.log('final :', this.settings.gridBorder)
+        //             break;
+        //         }
+        //         case 'value_section': {
+        //             console.log('bind to value_section', valueSection)
+
+        //             this.settings.gridBorder.topBorder = valueSection.topBorder ;
+        //             this.settings.gridBorder.botBorder = valueSection.botBorder ;
+        //             this.settings.gridBorder.leftBorder = valueSection.leftBorder ;
+        //             this.settings.gridBorder.rightBorder = valueSection.rightBorder ;
+        //             console.log('final :', this.settings.gridBorder)
+
+        //             break;
+        //         }
+        //     }
+        //     currentGridBorderSection = this.settings.gridBorder.section
+        // }
+
+        // console.log(this.settings.gridBorder.topBorder)
+
+        // console.log('latest :', this.settings.gridBorder)
+
+
+        
         
 
         /** Clear down existing plot */
@@ -77,7 +166,7 @@ export class Visual implements IVisual {
 
         /** Test 1: Data view has valid bare-minimum entries */
             let dataViews = options.dataViews;    
-            console.log('Test 1: Valid data view...');
+            // console.log('Test 1: Valid data view...');
             if (!dataViews
                 || !dataViews[0]
                 || !dataViews[0].table
@@ -85,7 +174,7 @@ export class Visual implements IVisual {
                 || !dataViews[0].table.columns
                 || !dataViews[0].metadata
             ) {
-                console.log('Test 1 FAILED. No data to draw table.');
+                // console.log('Test 1 FAILED. No data to draw table.');
                 return;
             }
 
@@ -109,7 +198,10 @@ export class Visual implements IVisual {
             let contentColumnIndex: number = -1;
             
             let tHead = this.container
+                .append('thead')
                 .append('tr');
+            
+
             
             table.columns.forEach(
                 (col, cidx) => {
@@ -148,16 +240,19 @@ export class Visual implements IVisual {
         const backgroundColor = this.settings.valuesConfig.backgroundColor
         const alterBackgroundColor = this.settings.valuesConfig.alterBackgroundColor
         const isWrappedText = this.settings.valuesConfig.textWrap
-
+                
+        let tBody = this.container.append('tbody')
 
         table.rows.forEach(
                 (row, idx) => {
-                    let tRow = this.container
+                    let tRow = tBody
                         .append('tr');
 
                     tRow
                         .style('backgroundColor', backgroundColor)
                         .style('text', textColor)
+                        .style('font-family', this.settings.valuesConfig.fontFamily)
+                        .style('font-size', `${this.settings.valuesConfig.fontSize}pt`)
                         .style('font-weight', this.settings.valuesConfig.bold ? 700 : 500)
                         .style('font-style', this.settings.valuesConfig.ilatic ? 'italic' : 'unset')
                         .style('text-decoration', this.settings.valuesConfig.underline ? 'underline' : 'none');
@@ -178,8 +273,7 @@ export class Visual implements IVisual {
                      
                             }
                             tRow
-                                .append('td')
-                                    .html(colContent);
+                                .append('td').html(colContent);
                             tRow
                                 .style('background-color', backgroundColor)
                                 .style('color', textColor);
@@ -189,6 +283,7 @@ export class Visual implements IVisual {
                                     .style('background-color', alterBackgroundColor)
                                     .style('color', alterTextColor);
                             }
+
                         }
                     )
                 }
@@ -224,7 +319,41 @@ export class Visual implements IVisual {
                 })
             }
             console.log('Table rendered!');
-        
+
+            const rowPadding = this.settings.gridOptions.rowPadding
+            $(this.target).find("td").css('padding', `${rowPadding}px`)
+
+            this.updatingBorder(tHead, tBody, this.settings.allGridBorder, 'all')
+            this.updatingBorder(tHead, tBody, this.settings.headerGridBorder, 'header')
+            this.updatingBorder(tHead, tBody, this.settings.valueSectionGridBorder, 'value')
+    }
+
+
+    private updatingBorder(tHead, tBody, setting, sectionName) {
+
+        // resolve for all section
+        const gridBorderDetail = `${setting.width}px solid ${setting.color}`
+        switch (sectionName) {
+            case 'all': {
+                    this.addElementBorder(tHead, setting, gridBorderDetail)
+                    this.addElementBorder(tBody, setting, gridBorderDetail)
+            }
+            case 'header': {
+                this.addElementBorder(tHead, setting, gridBorderDetail)
+            }
+            case 'value': {
+                this.addElementBorder(tBody, setting, gridBorderDetail)
+            }
+
+        }
+
+    }
+
+    private addElementBorder (element, setting, borderSetting) {
+        if (setting.topBorder) element.style('border-top', borderSetting)
+        if (setting.leftBorder) element.style('border-bottom', borderSetting)
+        if (setting.leftBorder ) element.style('border-left', borderSetting)
+        if (setting.rightBorder) element.style('border-right', borderSetting)
     }
 
     private splitContentWithCondition = (content: string, keyword: string, index: number, length: number): Array<String> =>{

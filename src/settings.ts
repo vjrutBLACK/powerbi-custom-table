@@ -2,7 +2,7 @@
 
 import { dataViewObjectsParser } from "powerbi-visuals-utils-dataviewutils";
 import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
-
+import { IGridBorderConfig } from "./models"
 export class VisualSettings extends DataViewObjectsParser {
     public dataPoint: dataPointSettings = new dataPointSettings();
     public config: configSettings = new configSettings();
@@ -10,6 +10,10 @@ export class VisualSettings extends DataViewObjectsParser {
     public valuesConfig: ValuesConfig = new ValuesConfig();
     public horizontalGridConfig: HorizontalGridConfig = new HorizontalGridConfig();
     public verticalGridConfig: VerticalGridConfig = new VerticalGridConfig();
+    public allGridBorder: GridBorderConfig = new GridBorderConfig();
+    public headerGridBorder: GridBorderConfig = new GridBorderConfig();
+    public valueSectionGridBorder: GridBorderConfig = new GridBorderConfig();
+    public gridOptions: GridOptions = new GridOptions();
 }
 
 export class dataPointSettings {
@@ -39,6 +43,7 @@ export class ValuesConfig {
     public underline: boolean = false;
     public fontSize: number = 10;
     public fontFamily: string = "Arial"
+    public fontStyle: any = "italic"
 }
 
 export class HorizontalGridConfig {
@@ -50,4 +55,19 @@ export class VerticalGridConfig {
     public show: boolean = true;
     public verticalGridlinesWidth: number = 1;
     public verticalGridlinesColor: string = "#09124F";
+}
+
+
+export class GridBorderConfig implements IGridBorderConfig {
+    public topBorder : boolean = false;
+    public botBorder : boolean = false;
+    public leftBorder : boolean = false;
+    public rightBorder : boolean = false;
+    public width : number = 1;
+    public color : string = "#F00505"
+}
+
+export class GridOptions {
+    public rowPadding: number = 1;
+    public globalFontSize: number = 9
 }
