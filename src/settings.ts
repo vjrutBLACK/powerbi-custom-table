@@ -8,6 +8,7 @@ export class VisualSettings extends DataViewObjectsParser {
     public config: configSettings = new configSettings();
     public highlightConfig: HighlightTextSettings = new HighlightTextSettings();
     public valuesConfig: ValuesConfig = new ValuesConfig();
+    public columnHeader: ValuesConfig = new ValuesConfig();
     public horizontalGridConfig: HorizontalGridConfig = new HorizontalGridConfig();
     public verticalGridConfig: VerticalGridConfig = new VerticalGridConfig();
     public allGridBorder: GridBorderConfig = new GridBorderConfig();
@@ -34,6 +35,8 @@ export class HighlightTextSettings {
 export class ValuesConfig {
     public textColor: string = "#09124F";
     public backgroundColor: string = "#97CBF4";
+    public headerTextColor: string = "rgb(220 224 229)";
+    public headerBackgroundColor: string = "rgb(1 90 181)";
     public alterTextColor: string = "#09124F";
     public alterBackgroundColor: string = "#C5E0F6";
     public show: boolean = false;
@@ -41,6 +44,7 @@ export class ValuesConfig {
     public bold: boolean = false;
     public ilatic: boolean = false;
     public underline: boolean = false;
+    public alignmentText: string = "";
     public fontSize: number = 10;
     public fontFamily: string = "Arial"
     public fontStyle: any = "italic"
