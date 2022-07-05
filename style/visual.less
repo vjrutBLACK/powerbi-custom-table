@@ -1,7 +1,6 @@
 table, th, td {
     border: 1px solid;
     border-collapse: collapse;
-    background-color: 'red'
 }
 tr > th {
     background-color: rgb(0, 51, 145);
@@ -11,6 +10,47 @@ tr > th {
 th, td {
     padding: 15px;
 }
+
+td {
+    // max-width: 200px;  
+    text-overflow: ellipsis;
+    overflow:hidden ;
+    white-space: nowrap;
+    // width: 400px;
+}
+
 #sandbox-host {
     overflow: auto !important;
+    font-size: 10pt;
+}
+
+// table {
+//     border-width: 1px;
+//     border-style: solid;
+//     border-color: black;
+//     border-collapse: collapse;
+
+
+// }
+// table td {
+//     border-width: 1px;
+//     border-style: solid;
+//     border-color: black;
+
+// }
+// table th {
+//     border-width: 1px;
+//     border-style: solid;
+//     border-color: black;
+//     background-color: green;
+// }
+
+.removed-horizontal-lines {
+    border-top: none;
+    border-bottom: none;
+}
+
+.removed-vertical-lines {
+    border-left: none;
+    border-right: none;
 }

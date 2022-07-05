@@ -39,21 +39,30 @@ import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 
 import { VisualSettings } from "./settings";
+// import { IGridBorderConfig } from "/models";
 import * as d3select from 'd3-selection';
-
+import $ from 'jquery';
+import { resizableGrid } from '../utils/resize-table'
 export class Visual implements IVisual {
+    private target: HTMLElement;
     private settings: VisualSettings;
     private container: d3.Selection<any, any, any, any>;
     private host: IVisualHost;
     private tableDefinition: any;
 
+    
     constructor(options: VisualConstructorOptions) {
         console.log('Visual constructor', options);
+
+
         /** Visual container */
+        this.target = options.element;
             this.container = d3select.select(options.element)
-                .append('div')
+                .append('div').style('width', '2000vh')
                     .append('table');
+
     }
+
 
     public update(options: VisualUpdateOptions) {
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
@@ -67,14 +76,13 @@ export class Visual implements IVisual {
             }
         }
 
-        
 
         /** Clear down existing plot */
             this.container.selectAll('*').remove();
 
         /** Test 1: Data view has valid bare-minimum entries */
             let dataViews = options.dataViews;    
-            console.log('Test 1: Valid data view...');
+            // console.log('Test 1: Valid data view...');
             if (!dataViews
                 || !dataViews[0]
                 || !dataViews[0].table
@@ -82,7 +90,7 @@ export class Visual implements IVisual {
                 || !dataViews[0].table.columns
                 || !dataViews[0].metadata
             ) {
-                console.log('Test 1 FAILED. No data to draw table.');
+                // console.log('Test 1 FAILED. No data to draw table.');
                 return;
             }
 
@@ -106,7 +114,10 @@ export class Visual implements IVisual {
             let contentColumnIndex: number = -1;
             
             let tHead = this.container
+                .append('thead')
                 .append('tr');
+            
+
             
             table.columns.forEach(
                 (col, cidx) => {
@@ -132,7 +143,7 @@ export class Visual implements IVisual {
                     tHead
                         .append('th')
                             .text(col.displayName);
-                }
+                }   
             );
 
         /** Now add rows and columns for each row of data */
@@ -140,11 +151,32 @@ export class Visual implements IVisual {
     
         const isShowHighlight: boolean = [highlightTextColumnIndex , highlightTextPosition, highlightTextLength].every(el => el > -1)
         
+        const alterTextColor = this.settings.valuesConfig.alterTextColor
+        const textColor = this.settings.valuesConfig.textColor
+        const backgroundColor = this.settings.valuesConfig.backgroundColor
+        const alterBackgroundColor = this.settings.valuesConfig.alterBackgroundColor
+        const isWrappedText = this.settings.valuesConfig.textWrap
+                
+        let tBody = this.container.append('tbody')
 
         table.rows.forEach(
-                (row) => {
-                    let tRow = this.container
+                (row, idx) => {
+                    let tRow = tBody
                         .append('tr');
+
+                    tRow
+                        .style('backgroundColor', backgroundColor)
+                        .style('text', textColor)
+                        .style('font-family', this.settings.valuesConfig.fontFamily)
+                        .style('font-size', `${this.settings.valuesConfig.fontSize}pt`)
+                        .style('font-weight', this.settings.valuesConfig.bold ? 700 : 500)
+                        .style('font-style', this.settings.valuesConfig.ilatic ? 'italic' : 'unset')
+                        .style('text-decoration', this.settings.valuesConfig.underline ? 'underline' : 'none');
+                    if(idx % 2 == 1) {
+                        tRow
+                            .style('backgroundColor', alterBackgroundColor)
+                            .style('text', alterTextColor);
+                    }
                     row.forEach(
                         (col, cidx) => {
                             let colContent = col.toString()
@@ -156,15 +188,96 @@ export class Visual implements IVisual {
                                 colContent = splitContent.length >= 2 ? this.joinHighlightText(splitContent, customizedHighlightText) : colContent
                      
                             }
+
+                            if (cidx === contentColumnIndex) {
+                                tRow
+                                .append('td').style('max-width', '400px').html(colContent);
+                            } else tRow
+                                .append('td').html(colContent);
                             tRow
-                                .append('td')
-                                    .html(colContent);
+                                .style('background-color', backgroundColor)
+                                .style('color', textColor);
+                               
+                            if(idx % 2 === 1) {
+                                tRow
+                                    .style('background-color', alterBackgroundColor)
+                                    .style('color', alterTextColor);
+                            }
+
                         }
                     )
                 }
             );
+
+            if (isWrappedText) $(this.target).find("td").css('white-space','normal')
+            if (!this.settings.horizontalGridConfig.show) {
+                $(this.target).find("td").addClass('removed-horizontal-lines')
+                $(this.target).find("th").addClass('removed-horizontal-lines')
+            } else {
+                const horCss = `${this.settings.horizontalGridConfig.horizontalGridlinesWidth}px solid ${this.settings.horizontalGridConfig.horizontalGridlinesColor}`
+                $(this.target).find("td").css({
+                    'border-bottom': horCss,
+                    'border-top': horCss,
+                })
+                $(this.target).find("th").css({
+                    'border-bottom': horCss,
+                    'border-top': horCss,
+                })
+            }
+            if (!this.settings.verticalGridConfig.show) {
+                $(this.target).find("td").addClass('removed-vertical-lines')
+                $(this.target).find("th").addClass('removed-vertical-lines')
+            } else {
+                const verCss = `${this.settings.verticalGridConfig.verticalGridlinesWidth}px solid ${this.settings.verticalGridConfig.verticalGridlinesColor}`
+                $(this.target).find("td").css({
+                    'border-right': verCss,
+                    'border-left': verCss,
+                })
+                $(this.target).find("th").css({
+                    'border-right': verCss,
+                    'border-left': verCss,
+                })
+            }
             console.log('Table rendered!');
-        
+
+            const rowPadding = this.settings.gridOptions.rowPadding
+            $(this.target).find("td").css('padding', `${rowPadding}px`)
+
+            this.updatingBorder(tHead, tBody, this.settings.allGridBorder, 'all')
+            this.updatingBorder(tHead, tBody, this.settings.headerGridBorder, 'header')
+            this.updatingBorder(tHead, tBody, this.settings.valueSectionGridBorder, 'value')
+
+
+            
+            resizableGrid(document.getElementsByTagName('table')[0])
+    }
+
+
+    private updatingBorder(tHead, tBody, setting, sectionName) {
+
+        // resolve for all section
+        const gridBorderDetail = `${setting.width}px solid ${setting.color}`
+        switch (sectionName) {
+            case 'all': {
+                    this.addElementBorder(tHead, setting, gridBorderDetail)
+                    this.addElementBorder(tBody, setting, gridBorderDetail)
+            }
+            case 'header': {
+                this.addElementBorder(tHead, setting, gridBorderDetail)
+            }
+            case 'value': {
+                this.addElementBorder(tBody, setting, gridBorderDetail)
+            }
+
+        }
+
+    }
+
+    private addElementBorder (element, setting, borderSetting) {
+        if (setting.topBorder) element.style('border-top', borderSetting)
+        if (setting.leftBorder) element.style('border-bottom', borderSetting)
+        if (setting.leftBorder ) element.style('border-left', borderSetting)
+        if (setting.rightBorder) element.style('border-right', borderSetting)
     }
 
     private splitContentWithCondition = (content: string, keyword: string, index: number, length: number): Array<String> =>{
