@@ -42,101 +42,7 @@ import { VisualSettings } from "./settings";
 // import { IGridBorderConfig } from "/models";
 import * as d3select from 'd3-selection';
 import $ from 'jquery';
-import { cloneDeep } from 'lodash';
-
-var tables = document.getElementsByTagName('table');
-for (var i=0; i<tables.length;i++){
- resizableGrid(tables[i]);
-}
-
-function resizableGrid(table) {
- var row = table.getElementsByTagName('tr')[0],
- cols = row ? row.children : undefined;
- if (!cols) return;
- 
- table.style.overflow = 'hidden';
- 
- var tableHeight = table.offsetHeight;
- 
- for (var i=0;i<cols.length;i++){
-  var div = createDiv(tableHeight);
-  cols[i].appendChild(div);
-  cols[i].style.position = 'relative';
-  setListeners(div);
- }
-
- function setListeners(div){
-  var pageX,curCol,nxtCol,curColWidth,nxtColWidth;
-
-  div.addEventListener('mousedown', function (e) {
-   curCol = e.target.parentElement;
-   nxtCol = curCol.nextElementSibling;
-   pageX = e.pageX; 
- 
-   var padding = paddingDiff(curCol);
- 
-   curColWidth = curCol.offsetWidth - padding;
-   if (nxtCol)
-    nxtColWidth = nxtCol.offsetWidth - padding;
-  });
-
-  div.addEventListener('mouseover', function (e) {
-   e.target.style.borderRight = '2px solid #0000ff';
-  })
-
-  div.addEventListener('mouseout', function (e) {
-   e.target.style.borderRight = '';
-  })
-
-  document.addEventListener('mousemove', function (e) {
-   if (curCol) {
-    var diffX = e.pageX - pageX;
- 
-    if (nxtCol)
-     nxtCol.style.width = (nxtColWidth - (diffX))+'px';
-
-    curCol.style.width = (curColWidth + diffX)+'px';
-   }
-  });
-
-  document.addEventListener('mouseup', function (e) { 
-   curCol = undefined;
-   nxtCol = undefined;
-   pageX = undefined;
-   nxtColWidth = undefined;
-   curColWidth = undefined
-  });
- }
- 
- function createDiv(height){
-  var div = document.createElement('div');
-  div.style.top = '0';
-  div.style.right = '0';
-  div.style.width = '5px';
-  div.style.position = 'absolute';
-  div.style.cursor = 'col-resize';
-  div.style.userSelect = 'none';
-  div.style.height = height + 'px';
-  return div;
- }
- 
- function paddingDiff(col){
- 
-  if (getStyleVal(col,'box-sizing') == 'border-box'){
-   return 0;
-  }
- 
-  var padLeft = getStyleVal(col,'padding-left');
-  var padRight = getStyleVal(col,'padding-right');
-  return (parseInt(padLeft) + parseInt(padRight));
-
- }
-
- function getStyleVal(elm,css){
-  return (window.getComputedStyle(elm, null).getPropertyValue(css))
- }
-};
-
+import { resizableGrid } from '../utils/resize-table'
 export class Visual implements IVisual {
     private target: HTMLElement;
     private settings: VisualSettings;
@@ -152,7 +58,7 @@ export class Visual implements IVisual {
         /** Visual container */
         this.target = options.element;
             this.container = d3select.select(options.element)
-                .append('div')
+                .append('div').style('width', '2000vh')
                     .append('table');
 
     }
@@ -170,89 +76,6 @@ export class Visual implements IVisual {
             }
         }
 
-
-        // if (this.settings.gridBorder.section === currentGridBorderSection) {
-
-        //     console.log('true')
-
-        //     switch (this.settings.gridBorder.section) {
-        //         case 'all': {
-        //             console.log('all : ', allBorder )
-        //             allBorder.topBorder = this.settings.gridBorder.topBorder;
-        //             allBorder.botBorder = this.settings.gridBorder.botBorder;
-        //             allBorder.rightBorder = this.settings.gridBorder.rightBorder;
-        //             allBorder.leftBorder = this.settings.gridBorder.leftBorder;
-        //             console.log(allBorder)
-        //             break;
-        //         }
-        //         case 'column_header': {
-        //             console.log('header')
-        //             console.log('hed top:', this.settings.gridBorder.topBorder)
-        //             columnHeader.topBorder = this.settings.gridBorder.topBorder;
-        //             columnHeader.botBorder = this.settings.gridBorder.botBorder;
-        //             columnHeader.rightBorder = this.settings.gridBorder.rightBorder;
-        //             columnHeader.leftBorder = this.settings.gridBorder.leftBorder;
-        //             console.log(columnHeader)
-
-        //             break;
-        //         }
-        //         case 'value_section': {
-        //             console.log('value_section : ', valueSection)
-        //             valueSection.topBorder = this.settings.gridBorder.topBorder;
-        //             valueSection.botBorder = this.settings.gridBorder.botBorder;
-        //             valueSection.rightBorder = this.settings.gridBorder.rightBorder;
-        //             valueSection.leftBorder = this.settings.gridBorder.leftBorder;
-        //             console.log(valueSection)
-
-        //             break;
-        //         }
-        //     }
-        
-        // } else {
-        //         console.log('differ')
-        //     switch (this.settings.gridBorder.section) {
-        //         case 'all': {
-        //             console.log('bind to all', allBorder)
-        //             this.settings.gridBorder.topBorder = allBorder.topBorder ;
-        //             this.settings.gridBorder.botBorder = allBorder.botBorder ;
-        //             this.settings.gridBorder.leftBorder = allBorder.leftBorder ;
-        //             this.settings.gridBorder.rightBorder = allBorder.rightBorder ;
-        //             console.log('final :', this.settings.gridBorder)
-
-        //             break;
-        //         }
-        //         case 'column_header': {
-        //             console.log('bind to column_header', columnHeader)
-
-        //             this.settings.gridBorder.topBorder = columnHeader.topBorder ;
-        //             this.settings.gridBorder.botBorder = columnHeader.botBorder ;
-        //             this.settings.gridBorder.leftBorder = columnHeader.leftBorder ;
-        //             this.settings.gridBorder.rightBorder = columnHeader.rightBorder ;
-        //             console.log('final :', this.settings.gridBorder)
-        //             break;
-        //         }
-        //         case 'value_section': {
-        //             console.log('bind to value_section', valueSection)
-
-        //             this.settings.gridBorder.topBorder = valueSection.topBorder ;
-        //             this.settings.gridBorder.botBorder = valueSection.botBorder ;
-        //             this.settings.gridBorder.leftBorder = valueSection.leftBorder ;
-        //             this.settings.gridBorder.rightBorder = valueSection.rightBorder ;
-        //             console.log('final :', this.settings.gridBorder)
-
-        //             break;
-        //         }
-        //     }
-        //     currentGridBorderSection = this.settings.gridBorder.section
-        // }
-
-        // console.log(this.settings.gridBorder.topBorder)
-
-        // console.log('latest :', this.settings.gridBorder)
-
-
-        
-        
 
         /** Clear down existing plot */
             this.container.selectAll('*').remove();
@@ -365,7 +188,11 @@ export class Visual implements IVisual {
                                 colContent = splitContent.length >= 2 ? this.joinHighlightText(splitContent, customizedHighlightText) : colContent
                      
                             }
-                            tRow
+
+                            if (cidx === contentColumnIndex) {
+                                tRow
+                                .append('td').style('max-width', '400px').html(colContent);
+                            } else tRow
                                 .append('td').html(colContent);
                             tRow
                                 .style('background-color', backgroundColor)
@@ -420,6 +247,8 @@ export class Visual implements IVisual {
             this.updatingBorder(tHead, tBody, this.settings.headerGridBorder, 'header')
             this.updatingBorder(tHead, tBody, this.settings.valueSectionGridBorder, 'value')
 
+
+            
             resizableGrid(document.getElementsByTagName('table')[0])
     }
 
