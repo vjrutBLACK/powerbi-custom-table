@@ -346,8 +346,89 @@
                     }
                 }
             }
+        },
+        "columnHeader": {
+            "displayName": "Column Header",
+            "description": "Change column header configuration",
+            "properties": {
+                "textColor": {
+                    "displayName": "Text color",
+                    "description": "The heacer column text color.",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "backgroundColor": {
+                    "displayName": "Background Color",
+                    "description": "The background main text color.",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontSize": {
+                    "displayName": "Text Size",
+                    "displayNameKey": "Visual_TextSize",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true    
+                        }
+                    }
+                },
+                "fontFamily": {
+                    "displayName": "Font family",
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "textWrap": {
+                    "displayName": "No wrap",
+                    "description": "The wrapping long text",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "bold": {
+                    "displayName": "Bold",
+                    "description": "Bold text",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "ilatic": {
+                    "displayName": "Italic",
+                    "description": "Italic text",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "underline": {
+                    "displayName": "Underline",
+                    "description": "Underline text",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "alignmentText": {
+                    "displayName": "Alignment",
+                    "description": "Text glignment",
+                    "type":     {
+                        "formatting": {
+                            "alignment": true
+                        }
+                    }
+                }
+            }
         }
-        
     },
     "supportsKeyboardFocus": true,
     "supportsSynchronizingFilterState": true,

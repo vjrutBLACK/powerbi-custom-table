@@ -118,7 +118,9 @@ export class Visual implements IVisual {
                 .append('tr');
             
 
-            
+            const headerTextColor = this.settings.columnHeader.headerTextColor
+            const headerBackgroundColor = this.settings.columnHeader.headerBackgroundColor
+
             table.columns.forEach(
                 (col, cidx) => {
                     switch (col.displayName) {
@@ -142,7 +144,15 @@ export class Visual implements IVisual {
                      
                     tHead
                         .append('th')
-                            .text(col.displayName);
+                            .text(col.displayName)
+                            .style('background-color', headerBackgroundColor)
+                            .style('color', headerTextColor)
+                            .style('text-align', this.settings.columnHeader.alignmentText ?? "center")
+                            .style('font-family', this.settings.columnHeader.fontFamily)
+                            .style('font-size', `${this.settings.columnHeader.fontSize}pt`)
+                            .style('font-weight', this.settings.columnHeader.bold ? 700 : 500)
+                            .style('font-style', this.settings.columnHeader.ilatic ? 'italic' : 'unset')
+                            .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none');;
                 }   
             );
 
@@ -165,8 +175,8 @@ export class Visual implements IVisual {
                         .append('tr');
 
                     tRow
-                        .style('backgroundColor', backgroundColor)
-                        .style('text', textColor)
+                        .style('background-color', backgroundColor)
+                        .style('color', textColor)
                         .style('font-family', this.settings.valuesConfig.fontFamily)
                         .style('font-size', `${this.settings.valuesConfig.fontSize}pt`)
                         .style('font-weight', this.settings.valuesConfig.bold ? 700 : 500)
@@ -214,28 +224,28 @@ export class Visual implements IVisual {
                 $(this.target).find("td").addClass('removed-horizontal-lines')
                 $(this.target).find("th").addClass('removed-horizontal-lines')
             } else {
-                const horCss = `${this.settings.horizontalGridConfig.horizontalGridlinesWidth}px solid ${this.settings.horizontalGridConfig.horizontalGridlinesColor}`
+                const horCSS = `${this.settings.horizontalGridConfig.horizontalGridlinesWidth}px solid ${this.settings.horizontalGridConfig.horizontalGridlinesColor}`
                 $(this.target).find("td").css({
-                    'border-bottom': horCss,
-                    'border-top': horCss,
+                    'border-bottom': horCSS,
+                    'border-top': horCSS,
                 })
                 $(this.target).find("th").css({
-                    'border-bottom': horCss,
-                    'border-top': horCss,
+                    'border-bottom': horCSS,
+                    'border-top': horCSS,
                 })
             }
             if (!this.settings.verticalGridConfig.show) {
                 $(this.target).find("td").addClass('removed-vertical-lines')
                 $(this.target).find("th").addClass('removed-vertical-lines')
             } else {
-                const verCss = `${this.settings.verticalGridConfig.verticalGridlinesWidth}px solid ${this.settings.verticalGridConfig.verticalGridlinesColor}`
+                const verCSS = `${this.settings.verticalGridConfig.verticalGridlinesWidth}px solid ${this.settings.verticalGridConfig.verticalGridlinesColor}`
                 $(this.target).find("td").css({
-                    'border-right': verCss,
-                    'border-left': verCss,
+                    'border-right': verCSS,
+                    'border-left': verCSS,
                 })
                 $(this.target).find("th").css({
-                    'border-right': verCss,
-                    'border-left': verCss,
+                    'border-right': verCSS,
+                    'border-left': verCSS,
                 })
             }
             console.log('Table rendered!');
