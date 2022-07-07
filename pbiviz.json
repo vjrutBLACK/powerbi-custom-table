@@ -2,7 +2,7 @@
     "visual": {
         "name": "Table Plus",
         "displayName": "Table Plus",
-        "guid": "tableExample04E649621A964F0491F29D514385D7FC",
+        "guid": "TablePlus",
         "visualClassName": "Visual",
         "version": "1.0.0",
         "description": "Custom Table",

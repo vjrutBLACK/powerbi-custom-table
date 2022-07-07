@@ -351,7 +351,7 @@
             "displayName": "Column Header",
             "description": "Change column header configuration",
             "properties": {
-                "textColor": {
+                "headerTextColor": {
                     "displayName": "Text color",
                     "description": "The heacer column text color.",
                     "type": {
@@ -362,7 +362,7 @@
                         }
                     }
                 },
-                "backgroundColor": {
+                "headerBackgroundColor": {
                     "displayName": "Background Color",
                     "description": "The background main text color.",
                     "type": {
