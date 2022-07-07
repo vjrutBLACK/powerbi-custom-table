@@ -193,8 +193,8 @@ export class Visual implements IVisual {
                         .style('text-decoration', this.settings.valuesConfig.underline ? 'underline' : 'none');
                     if(idx % 2 == 1) {
                         tRow
-                            .style('backgroundColor', alterBackgroundColor)
-                            .style('text', alterTextColor);
+                            .style('background-color', alterBackgroundColor)
+                            .style('color', alterTextColor);
                     }
                     row.forEach(
                         (col, cidx) => {
@@ -260,7 +260,9 @@ export class Visual implements IVisual {
             console.log('Table rendered!');
 
             const rowPadding = this.settings.gridOptions.rowPadding
+            const globalFontSize = this.settings.gridOptions.globalFontSize
             $(this.target).find("td").css('padding', `${rowPadding}px`)
+            $(this.target).find("td").css('font-size', `${globalFontSize}px`)
 
             this.updatingBorder(tHead, tBody, this.settings.allGridBorder, 'all')
             this.updatingBorder(tHead, tBody, this.settings.headerGridBorder, 'header')
@@ -270,18 +272,18 @@ export class Visual implements IVisual {
             
             resizableGrid(document.getElementsByTagName('table')[0])
 
-            tBody.on('click', () => {
-                const mouseEvent: MouseEvent = d3.event as MouseEvent;
-                const eventTarget: EventTarget = mouseEvent.target;
+            // tBody.on('click', () => {
+            //     const mouseEvent: MouseEvent = d3.event as MouseEvent;
+            //     const eventTarget: EventTarget = mouseEvent.target;
 
-                console.log('click', eventTarget)
-                let dataPoint: any = d3Select<d3.BaseType, any>(eventTarget as d3.BaseType);
+            //     console.log('click', eventTarget)
+            //     let dataPoint: any = d3Select<d3.BaseType, any>(eventTarget as d3.BaseType);
 
-                // console.log(dataPoint)
+            //     // console.log(dataPoint)
     
-                this.selectionManager.select(dataPoint);
-                mouseEvent.preventDefault();
-            });
+            //     this.selectionManager.select(dataPoint);
+            //     mouseEvent.preventDefault();
+            // });
     }
 
 

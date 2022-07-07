@@ -35,8 +35,8 @@ export class HighlightTextSettings {
 export class ValuesConfig {
     public textColor: string = "#09124F";
     public backgroundColor: string = "#97CBF4";
-    public headerTextColor: string = "rgb(220 224 229)";
-    public headerBackgroundColor: string = "rgb(1 90 181)";
+    public headerTextColor: string = "#fff";
+    public headerBackgroundColor: string = "#4584D3";
     public alterTextColor: string = "#09124F";
     public alterBackgroundColor: string = "#C5E0F6";
     public show: boolean = false;
