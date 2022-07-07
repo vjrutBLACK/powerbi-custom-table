@@ -28,6 +28,7 @@
 
 import "./../style/visual.less";
 import powerbi from "powerbi-visuals-api";
+import { interactivitySelectionService, interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
@@ -37,22 +38,30 @@ import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+type Selection<T extends d3.BaseType> = d3.Selection<T, any,any, any>;
 
 import { VisualSettings } from "./settings";
 // import { IGridBorderConfig } from "/models";
 import * as d3select from 'd3-selection';
+import { select as d3Select } from "d3-selection";
 import $ from 'jquery';
 import { resizableGrid } from '../utils/resize-table'
+import ISelectionManager = powerbi.extensibility.ISelectionManager;
+import * as d3 from "d3";
 export class Visual implements IVisual {
     private target: HTMLElement;
     private settings: VisualSettings;
     private container: d3.Selection<any, any, any, any>;
     private host: IVisualHost;
     private tableDefinition: any;
+    private selectionManager: ISelectionManager;
+    // private interactivity: interactivityBaseService.IInteractivityService<VisualDataPoint>;
 
     
     constructor(options: VisualConstructorOptions) {
         console.log('Visual constructor', options);
+        this.host = options.host;
+        this.selectionManager = this.host.createSelectionManager();
 
 
         /** Visual container */
@@ -260,6 +269,19 @@ export class Visual implements IVisual {
 
             
             resizableGrid(document.getElementsByTagName('table')[0])
+
+            tBody.on('click', () => {
+                const mouseEvent: MouseEvent = d3.event as MouseEvent;
+                const eventTarget: EventTarget = mouseEvent.target;
+
+                console.log('click', eventTarget)
+                let dataPoint: any = d3Select<d3.BaseType, any>(eventTarget as d3.BaseType);
+
+                // console.log(dataPoint)
+    
+                this.selectionManager.select(dataPoint);
+                mouseEvent.preventDefault();
+            });
     }
 
 

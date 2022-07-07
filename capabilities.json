@@ -89,7 +89,7 @@
             }
         },
         "allGridBorder": {
-            "displayName": "All grid border",
+            "displayName": "Border",
             "properties": {
                 "topBorder": {
                     "displayName": "Top border",
@@ -139,7 +139,7 @@
             }
         },
         "headerGridBorder": {
-            "displayName": "Header column grid border",
+            "displayName": "Column header",
             "properties": {
                 "topBorder": {
                     "displayName": "Top border",
@@ -188,7 +188,7 @@
             }
         },
         "valueSectionGridBorder": {
-            "displayName": "Value section grid border",
+            "displayName": "Value section",
             "properties": {
                 "topBorder": {
                     "displayName": "Top border",
@@ -237,7 +237,7 @@
             }
         },
         "gridOptions": {
-            "displayName": "Grid options",
+            "displayName": "Options",
             "properties": {
                 "rowPadding": {
                     "displayName": "Row padding",
@@ -430,9 +430,7 @@
             }
         }
     },
-    "supportsKeyboardFocus": true,
     "supportsSynchronizingFilterState": true,
-    "supportsHighlight": true,
     "dataViewMappings": [
         {
             "table": {
