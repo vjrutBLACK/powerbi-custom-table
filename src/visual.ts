@@ -25,10 +25,12 @@
  */
 
 "use strict";
+type Selection<T extends d3.BaseType> = d3.Selection<T, any,any, any>;
+// @import (less) "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.css";
 
 import "./../style/visual.less";
 import powerbi from "powerbi-visuals-api";
-import { interactivitySelectionService, interactivityBaseService } from "powerbi-visuals-utils-interactivityutils";
+import { interactivitySelectionService, interactivityBaseService, baseBehavior } from "powerbi-visuals-utils-interactivityutils";
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
@@ -38,7 +40,6 @@ import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
-type Selection<T extends d3.BaseType> = d3.Selection<T, any,any, any>;
 
 import { VisualSettings } from "./settings";
 // import { IGridBorderConfig } from "/models";
@@ -48,20 +49,99 @@ import $ from 'jquery';
 import { resizableGrid } from '../utils/resize-table'
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
 import * as d3 from "d3";
+export interface VisualDataPoint extends interactivitySelectionService.SelectableDataPoint {
+    value: powerbi.PrimitiveValue;
+}
+import { SelectableDataPoint } from "powerbi-visuals-utils-interactivityutils/lib/interactivitySelectionService";
+
+import {
+    IBehaviorOptions,
+    BaseDataPoint,
+    IInteractiveBehavior,
+    ISelectionHandler,
+} from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
+
+export interface BaseBehaviorOptions<SelectableDataPointType extends BaseDataPoint> extends IBehaviorOptions<SelectableDataPointType> {
+
+    /** d3 selection object of the main elements on the chart */
+    elementsSelection: Selection<any>;
+    
+    /** d3 selection object of some elements on backgroup, to hadle click of reset selection */
+    clearCatcherSelection: d3.Selection<any, any, any, any>;
+}
+
+
+
+export class Behavior<SelectableDataPointType extends BaseDataPoint> implements IInteractiveBehavior {
+
+    /** d3 selection object of main elements in the chart */
+    protected options: BaseBehaviorOptions<SelectableDataPointType>;
+    protected selectionHandler: ISelectionHandler;
+
+    protected bindClick() {
+        const {
+            elementsSelection
+        } = this.options;
+      
+        elementsSelection.on("click", (datum) => {
+            console.log(datum);
+            // const mouseEvent: MouseEvent = getEvent() as MouseEvent || window.event as MouseEvent;
+            // mouseEvent && this.selectionHandler.handleSelection(
+            //     datum,
+            //     mouseEvent.ctrlKey);
+        });
+    }
+
+    protected bindClearCatcher() {
+      // ...
+    }
+
+    protected bindContextMenu() {
+      // ...
+    }
+
+    public bindEvents(
+        options: BaseBehaviorOptions<SelectableDataPointType>,
+        selectionHandler: ISelectionHandler): void {
+      // ...
+    }
+
+    public renderSelection(hasSelection: boolean): void {
+      // ...
+    }
+}
+
+
+// export interface ISelectionId {
+//     equals(other: ISelectionId): boolean;
+//     includes(other: ISelectionId, ignoreHighlight?: boolean): boolean;
+//     getKey(): string;
+//     getSelector(): Selector;
+//     getSelectorsByColumn(): SelectorsByColumn;
+//     hasIdentity(): boolean;
+// }
+
 export class Visual implements IVisual {
     private target: HTMLElement;
     private settings: VisualSettings;
-    private container: d3.Selection<any, any, any, any>;
+    private container: Selection<any>;
     private host: IVisualHost;
     private tableDefinition: any;
     private selectionManager: ISelectionManager;
-    // private interactivity: interactivityBaseService.IInteractivityService<VisualDataPoint>;
+    private interactivity: interactivityBaseService.IInteractivityService<VisualDataPoint>;
 
     
     constructor(options: VisualConstructorOptions) {
+
+        let behavior = new Behavior();
+
         console.log('Visual constructor', options);
         this.host = options.host;
+        
         this.selectionManager = this.host.createSelectionManager();
+
+        this.interactivity = interactivitySelectionService.createInteractivitySelectionService(this.host);
+
 
 
         /** Visual container */
@@ -69,6 +149,14 @@ export class Visual implements IVisual {
             this.container = d3select.select(options.element)
                 .append('div').style('width', '2000vh')
                     .append('table');
+
+
+            // this.interactivity.bind(<BaseBehaviorOptions<VisualDataPoint>>{
+            //     behavior: this.behavior,
+            //     dataPoints: this.categories,
+            //     clearCatcherSelection: select(this.target),
+            //     elementsSelection: selectionMerge
+            // });
 
     }
 
@@ -89,23 +177,58 @@ export class Visual implements IVisual {
         /** Clear down existing plot */
             this.container.selectAll('*').remove();
 
+            console.log('options', options)
+
         /** Test 1: Data view has valid bare-minimum entries */
             let dataViews = options.dataViews;    
             // console.log('Test 1: Valid data view...');
             if (!dataViews
                 || !dataViews[0]
-                || !dataViews[0].table
-                || !dataViews[0].table.rows
-                || !dataViews[0].table.columns
-                || !dataViews[0].metadata
+                || !dataViews[0].categorical
+                || !dataViews[0].categorical.categories
+                || !dataViews[0].categorical.categories[0].source
+                || !dataViews[0].categorical.categories[0].values
             ) {
-                // console.log('Test 1 FAILED. No data to draw table.');
+                console.log('Test 1 FAILED. No data to draw table.');
                 return;
             }
+            
+            // console.log(dataViews)
 
         
         /** If we get this far, we can trust that we can work with the data! */
-            let table = dataViews[0].table;
+        
+            let table = dataViews[0].categorical;
+            console.log(table);
+
+            
+            let category = table.categories[0];
+            let dataValue = category.values;
+
+            let dataPoint = []
+            console.log(1);
+
+            // let len = Math.max(table.values.length, dataValue.length)
+            // console.log(len);
+            
+            
+
+            for (let i = 0; i < dataValue.length; i++) {
+    
+                dataPoint.push({
+                    category: category.values[i] + '',
+                    value: dataValue[i],
+                    selectionId: this.host.createSelectionIdBuilder()
+                        .withCategory(category, i)
+                        .createSelectionId()
+                });
+            }
+            console.log(this.container.selectAll('*'));
+            
+            this.container.selectAll('*').data(dataPoint)
+            
+
+            console.log('dataPoint ', dataPoint)
             const hightlightTextColor = this.settings.highlightConfig.textColor
             const hightlightFontSize = this.settings.highlightConfig.fontSize
             const hightlightFontFamily = this.settings.highlightConfig.fontFamily
@@ -130,9 +253,13 @@ export class Visual implements IVisual {
             const headerTextColor = this.settings.columnHeader.headerTextColor
             const headerBackgroundColor = this.settings.columnHeader.headerBackgroundColor
 
-            table.columns.forEach(
+            console.log('table ', table)
+
+            // table.categories.forEach
+
+            table.categories.forEach(
                 (col, cidx) => {
-                    switch (col.displayName) {
+                    switch (col.source.displayName) {
                         case '正規語': {
                             highlightTextColumnIndex = cidx;
                             break;
@@ -153,7 +280,7 @@ export class Visual implements IVisual {
                      
                     tHead
                         .append('th')
-                            .text(col.displayName)
+                            .text(col.source.displayName)
                             .style('background-color', headerBackgroundColor)
                             .style('color', headerTextColor)
                             .style('text-align', this.settings.columnHeader.alignmentText ?? "center")
@@ -177,56 +304,67 @@ export class Visual implements IVisual {
         const isWrappedText = this.settings.valuesConfig.textWrap
                 
         let tBody = this.container.append('tbody')
+        // console.log(tBody)
 
-        table.rows.forEach(
-                (row, idx) => {
-                    let tRow = tBody
-                        .append('tr');
+        let newArray = [];
+        table.categories.forEach((el,idx) => {
+            el.values.forEach((r,ridx) => {
+                newArray.push([])
+                newArray[ridx][idx] = r
+            })
+            
+        })
 
+        newArray.forEach( (row, idx) => {
+            let tRow = tBody
+                .append('tr');
+
+            tRow
+                .style('background-color', backgroundColor)
+                .style('color', textColor)
+                .style('font-family', this.settings.valuesConfig.fontFamily)
+                .style('font-size', `${this.settings.valuesConfig.fontSize}pt`)
+                .style('font-weight', this.settings.valuesConfig.bold ? 700 : 500)
+                .style('font-style', this.settings.valuesConfig.ilatic ? 'italic' : 'unset')
+                .style('text-decoration', this.settings.valuesConfig.underline ? 'underline' : 'none');
+            if(idx % 2 == 1) {
+                tRow
+                    .style('background-color', alterBackgroundColor)
+                    .style('color', alterTextColor);
+            }
+
+            // console.log(row)
+            row.forEach(
+                (col, cidx) => {
+                    let colContent = col.toString()
+                    if (isShowHighlight && cidx === contentColumnIndex) {
+                        const hightLightText = row[highlightTextColumnIndex].toString()
+                        // const splitContent = this.splitContentWithCondition(colContent, hightLightText, Number(row[highlightTextPosition]), Number(row[highlightTextLength]))
+                        const customizedHighlightText = customizedTextByConfigurations(hightLightText)
+                        
+                        // colContent = splitContent.length >= 2 ? this.joinHighlightText(splitContent, customizedHighlightText) : colContent
+             
+                    }
+
+                    if (cidx === contentColumnIndex) {
+                        tRow
+                        .append('td').style('max-width', '400px').html(colContent);
+                    } else tRow
+                        .append('td').html(colContent);
                     tRow
                         .style('background-color', backgroundColor)
-                        .style('color', textColor)
-                        .style('font-family', this.settings.valuesConfig.fontFamily)
-                        .style('font-size', `${this.settings.valuesConfig.fontSize}pt`)
-                        .style('font-weight', this.settings.valuesConfig.bold ? 700 : 500)
-                        .style('font-style', this.settings.valuesConfig.ilatic ? 'italic' : 'unset')
-                        .style('text-decoration', this.settings.valuesConfig.underline ? 'underline' : 'none');
-                    if(idx % 2 == 1) {
+                        .style('color', textColor);
+                       
+                    if(idx % 2 === 1) {
                         tRow
                             .style('background-color', alterBackgroundColor)
                             .style('color', alterTextColor);
                     }
-                    row.forEach(
-                        (col, cidx) => {
-                            let colContent = col.toString()
-                            if (isShowHighlight && cidx === contentColumnIndex) {
-                                const hightLightText = row[highlightTextColumnIndex].toString()
-                                const splitContent = this.splitContentWithCondition(colContent, hightLightText, Number(row[highlightTextPosition]), Number(row[highlightTextLength]))
-                                const customizedHighlightText = customizedTextByConfigurations(hightLightText)
-                                
-                                colContent = splitContent.length >= 2 ? this.joinHighlightText(splitContent, customizedHighlightText) : colContent
-                     
-                            }
 
-                            if (cidx === contentColumnIndex) {
-                                tRow
-                                .append('td').style('max-width', '400px').html(colContent);
-                            } else tRow
-                                .append('td').html(colContent);
-                            tRow
-                                .style('background-color', backgroundColor)
-                                .style('color', textColor);
-                               
-                            if(idx % 2 === 1) {
-                                tRow
-                                    .style('background-color', alterBackgroundColor)
-                                    .style('color', alterTextColor);
-                            }
-
-                        }
-                    )
                 }
-            );
+            )
+        });
+                
 
             if (isWrappedText) $(this.target).find("td").css('white-space','normal')
             if (!this.settings.horizontalGridConfig.show) {
@@ -271,19 +409,35 @@ export class Visual implements IVisual {
 
             
             resizableGrid(document.getElementsByTagName('table')[0])
-
-            // tBody.on('click', () => {
-            //     const mouseEvent: MouseEvent = d3.event as MouseEvent;
-            //     const eventTarget: EventTarget = mouseEvent.target;
-
-            //     console.log('click', eventTarget)
-            //     let dataPoint: any = d3Select<d3.BaseType, any>(eventTarget as d3.BaseType);
-
-            //     // console.log(dataPoint)
     
-            //     this.selectionManager.select(dataPoint);
-            //     mouseEvent.preventDefault();
-            // });
+            let selectionManager = this.selectionManager;
+            let allowInteractions = this.host.allowInteractions;
+            console.log('dataViews[0].categorical', dataViews[0])
+
+            // let identity = this.host.createSelectionIdBuilder()
+            // .withCategory(categories, i)
+            // .createSelectionId()
+            
+            // console.log(tBody)
+            // d3.selectAll()
+            tBody.on('click', (d) => {
+                const mouseEvent: MouseEvent = d3.event as MouseEvent;
+                const eventTarget: EventTarget = mouseEvent.target;
+
+                console.log('click', eventTarget);
+            
+                let dataPoint: any = d3Select<d3.BaseType, any>(eventTarget as d3.BaseType);
+                console.log(dataPoint);
+                console.log('body',options);
+
+                // console.log('click')
+                // if (allowInteractions) {
+                //     console.log(d)
+                //     selectionManager.select(d.identity, true).then(ids => {
+                //         console.log(ids)
+                //     });
+                // }
+            });
     }
 
 
