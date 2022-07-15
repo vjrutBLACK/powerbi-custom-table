@@ -112,6 +112,7 @@ export class Behavior<SelectableDataPointType extends BaseDataPoint> implements 
 }
 
 
+
 // export interface ISelectionId {
 //     equals(other: ISelectionId): boolean;
 //     includes(other: ISelectionId, ignoreHighlight?: boolean): boolean;
@@ -135,7 +136,7 @@ export class Visual implements IVisual {
 
         let behavior = new Behavior();
 
-        console.log('Visual constructor', options);
+        // console.log('Visual constructor', options);
         this.host = options.host;
         
         this.selectionManager = this.host.createSelectionManager();
@@ -177,7 +178,7 @@ export class Visual implements IVisual {
         /** Clear down existing plot */
             this.container.selectAll('*').remove();
 
-            console.log('options', options)
+            // console.log('options', options)
 
         /** Test 1: Data view has valid bare-minimum entries */
             let dataViews = options.dataViews;    
@@ -199,14 +200,13 @@ export class Visual implements IVisual {
         /** If we get this far, we can trust that we can work with the data! */
         
             let table = dataViews[0].categorical;
-            console.log(table);
+            // console.log(table);
 
             
             let category = table.categories[0];
             let dataValue = category.values;
 
             let dataPoint = []
-            console.log(1);
 
             // let len = Math.max(table.values.length, dataValue.length)
             // console.log(len);
@@ -223,12 +223,12 @@ export class Visual implements IVisual {
                         .createSelectionId()
                 });
             }
-            console.log(this.container.selectAll('*'));
+            // console.log(this.container.selectAll('*'));
             
             this.container.selectAll('*').data(dataPoint)
             
 
-            console.log('dataPoint ', dataPoint)
+            // console.log('dataPoint ', dataPoint)
             const hightlightTextColor = this.settings.highlightConfig.textColor
             const hightlightFontSize = this.settings.highlightConfig.fontSize
             const hightlightFontFamily = this.settings.highlightConfig.fontFamily
@@ -253,7 +253,7 @@ export class Visual implements IVisual {
             const headerTextColor = this.settings.columnHeader.headerTextColor
             const headerBackgroundColor = this.settings.columnHeader.headerBackgroundColor
 
-            console.log('table ', table)
+            // console.log('table ', table)
 
             // table.categories.forEach
 
@@ -412,7 +412,7 @@ export class Visual implements IVisual {
     
             let selectionManager = this.selectionManager;
             let allowInteractions = this.host.allowInteractions;
-            console.log('dataViews[0].categorical', dataViews[0])
+            // console.log('dataViews[0].categorical', dataViews[0])
 
             // let identity = this.host.createSelectionIdBuilder()
             // .withCategory(categories, i)
@@ -420,25 +420,18 @@ export class Visual implements IVisual {
             
             // console.log(tBody)
             // d3.selectAll()
-            tBody.on('click', (d) => {
-                const mouseEvent: MouseEvent = d3.event as MouseEvent;
-                const eventTarget: EventTarget = mouseEvent.target;
+            // tBody.on('click', (d) => {
+            //     const mouseEvent: MouseEvent = d3.event as MouseEvent;
+            //     const eventTarget: EventTarget = mouseEvent.target;
 
-                console.log('click', eventTarget);
-            
-                let dataPoint: any = d3Select<d3.BaseType, any>(eventTarget as d3.BaseType);
-                console.log(dataPoint);
-                console.log('body',options);
+            //     let dataPoint: any = d3Select<d3.BaseType, any>(eventTarget as d3.BaseType);
 
-                // console.log('click')
-                // if (allowInteractions) {
-                //     console.log(d)
-                //     selectionManager.select(d.identity, true).then(ids => {
-                //         console.log(ids)
-                //     });
-                // }
-            });
+            //     this.selectionManager.select(dataPoint);
+            //     mouseEvent.preventDefault();
+            // });
     }
+
+    
 
 
     private updatingBorder(tHead, tBody, setting, sectionName) {
