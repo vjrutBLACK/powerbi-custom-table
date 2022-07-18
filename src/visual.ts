@@ -268,7 +268,6 @@ export class Visual implements IVisual {
                      
                     tHead
                         .append('th')
-                            .text(col.source.displayName)
                             .style('background-color', headerBackgroundColor)
                             .style('color', headerTextColor)
                             .style('text-align', this.settings.columnHeader.alignmentText ?? "center")
@@ -277,6 +276,8 @@ export class Visual implements IVisual {
                             .style('font-weight', this.settings.columnHeader.bold ? 700 : 500)
                             .style('font-style', this.settings.columnHeader.ilatic ? 'italic' : 'unset')
                             .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none')
+                            .append('span')
+                            .text(col.source.displayName)
                             ;
                 }   
             );
@@ -458,15 +459,10 @@ export class Visual implements IVisual {
     private bindingHeaderClicking () {
         $('th').each((indx, th) => {
             $(th).on('click', () => {
-                sortTable(indx)
-                // if ($('th')[indx].find('.sort-by-asc').length) {
-                //     $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx])
-                //     $('th > i.sort-by-asc').remove();
-                // }
-                // else if ($('th')[indx].find('.sort-by-desc').length) {
-                //     $( "<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) 
-                //     $('th > i.sort-by-desc').remove();
-                // }
+                let isAscDirection = sortTable(indx);
+                $('th > i').remove();
+                resizableGrid(document.getElementsByTagName('table')[0], true);
+                isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
             })
         })
     }

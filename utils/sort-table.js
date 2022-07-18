@@ -1,4 +1,5 @@
 let cPrev = -1;
+let isASCDirection = true
 import $ from "jquery"
 export function sortTable(c) {
     let table = $('#custom-table')[0];
@@ -17,6 +18,7 @@ export function sortTable(c) {
         let  th = arrTable.shift(); // remove the header row from the array, and save it
         
         if (c !== cPrev) { // different column is clicked, so sort by the new column
+            isASCDirection = true
             arrTable.sort(
                 function (a, b) {
                     if (a[c] === b[c]) {
@@ -28,6 +30,7 @@ export function sortTable(c) {
             );
         } else { // if the same column is clicked then reverse the array
             arrTable.reverse();
+            isASCDirection = !isASCDirection
         }
         
         cPrev = c; // save in previous c
@@ -42,5 +45,6 @@ export function sortTable(c) {
             }
         }
 
+        return isASCDirection
 
   }
