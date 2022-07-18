@@ -430,15 +430,18 @@
             }
         }
     },
+
     "supportsSynchronizingFilterState": true,
+    "supportsMultiVisualSelection": true,
     "dataViewMappings": [
         {
-            "table": {
-                "rows": {
+            "categorical": {
+                "categories": {
                     "for": {
                         "in": "values"
                     }
                 }
+        
             }
         }
     ]
