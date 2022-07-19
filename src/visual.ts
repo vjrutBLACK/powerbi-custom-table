@@ -458,11 +458,14 @@ export class Visual implements IVisual {
 
     private bindingHeaderClicking () {
         $('th').each((indx, th) => {
-            $(th).on('click', () => {
-                let isAscDirection = sortTable(indx);
-                $('th > i').remove();
-                resizableGrid(document.getElementsByTagName('table')[0], true);
-                isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
+            $(th).on('click', (d) => {
+                if (d.target.nodeName.toLowerCase() !== 'div') {
+                    let isAscDirection = sortTable(indx);
+                    $('th > i').remove();
+                    resizableGrid(document.getElementsByTagName('table')[0], true);
+                    isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
+                }
+                
             })
         })
     }
