@@ -4,7 +4,7 @@ for (var i=0; i<tables.length;i++){
  resizableGrid(tables[i]);
 }
 
-export function resizableGrid(table) {
+export function resizableGrid(table, isSorted = false) {
  var row = table.getElementsByTagName('tr')[0],
  cols = row ? row.children : undefined;
  if (!cols) return;
@@ -15,6 +15,7 @@ export function resizableGrid(table) {
  
  for (var i=0;i<cols.length;i++){
   var div = createDiv(tableHeight);
+  if (isSorted) cols[i].removeChild(cols[i].lastChild);
   cols[i].appendChild(div);
   cols[i].style.position = 'relative';
   setListeners(div);

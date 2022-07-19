@@ -53,7 +53,7 @@ export interface VisualDataPoint extends interactivitySelectionService.Selectabl
     value: powerbi.PrimitiveValue;
 }
 import { SelectableDataPoint } from "powerbi-visuals-utils-interactivityutils/lib/interactivitySelectionService";
-
+import {sortTable} from "../utils/sort-table";
 import {
     IBehaviorOptions,
     BaseDataPoint,
@@ -136,7 +136,6 @@ export class Visual implements IVisual {
 
         let behavior = new Behavior();
 
-        // console.log('Visual constructor', options);
         this.host = options.host;
         
         this.selectionManager = this.host.createSelectionManager();
@@ -149,7 +148,7 @@ export class Visual implements IVisual {
         this.target = options.element;
             this.container = d3select.select(options.element)
                 .append('div').style('width', '2000vh')
-                    .append('table');
+                    .append('table').attr('id', 'custom-table');
 
 
             // this.interactivity.bind(<BaseBehaviorOptions<VisualDataPoint>>{
@@ -182,7 +181,7 @@ export class Visual implements IVisual {
 
         /** Test 1: Data view has valid bare-minimum entries */
             let dataViews = options.dataViews;    
-            // console.log('Test 1: Valid data view...');
+
             if (!dataViews
                 || !dataViews[0]
                 || !dataViews[0].categorical
@@ -194,24 +193,16 @@ export class Visual implements IVisual {
                 return;
             }
             
-            // console.log(dataViews)
-
         
         /** If we get this far, we can trust that we can work with the data! */
         
             let table = dataViews[0].categorical;
-            // console.log(table);
-
             
             let category = table.categories[0];
             let dataValue = category.values;
 
             let dataPoint = []
 
-            // let len = Math.max(table.values.length, dataValue.length)
-            // console.log(len);
-            
-            
 
             for (let i = 0; i < dataValue.length; i++) {
     
@@ -253,10 +244,6 @@ export class Visual implements IVisual {
             const headerTextColor = this.settings.columnHeader.headerTextColor
             const headerBackgroundColor = this.settings.columnHeader.headerBackgroundColor
 
-            // console.log('table ', table)
-
-            // table.categories.forEach
-
             table.categories.forEach(
                 (col, cidx) => {
                     switch (col.source.displayName) {
@@ -277,10 +264,10 @@ export class Visual implements IVisual {
                             break;
                         }
                     }
+
                      
                     tHead
                         .append('th')
-                            .text(col.source.displayName)
                             .style('background-color', headerBackgroundColor)
                             .style('color', headerTextColor)
                             .style('text-align', this.settings.columnHeader.alignmentText ?? "center")
@@ -288,11 +275,18 @@ export class Visual implements IVisual {
                             .style('font-size', `${this.settings.columnHeader.fontSize}pt`)
                             .style('font-weight', this.settings.columnHeader.bold ? 700 : 500)
                             .style('font-style', this.settings.columnHeader.ilatic ? 'italic' : 'unset')
-                            .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none');;
+                            .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none')
+                            .append('span')
+                            .text(col.source.displayName)
+                            ;
                 }   
             );
 
+            // <div "true" class="powervisuals-glyph sort-icon caret-up " style="font-size:7.573333333333332px;bottom:2px;"></div>
+
         /** Now add rows and columns for each row of data */
+
+        
 
     
         const isShowHighlight: boolean = [highlightTextColumnIndex , highlightTextPosition, highlightTextLength].every(el => el > -1)
@@ -304,17 +298,16 @@ export class Visual implements IVisual {
         const isWrappedText = this.settings.valuesConfig.textWrap
                 
         let tBody = this.container.append('tbody')
-        // console.log(tBody)
 
         let newArray = [];
         table.categories.forEach((el,idx) => {
+            let valuesLength = el.values.length
             el.values.forEach((r,ridx) => {
-                newArray.push([])
+                if (newArray.length < valuesLength) newArray.push([])
                 newArray[ridx][idx] = r
             })
             
         })
-
         newArray.forEach( (row, idx) => {
             let tRow = tBody
                 .append('tr');
@@ -333,24 +326,19 @@ export class Visual implements IVisual {
                     .style('color', alterTextColor);
             }
 
-            // console.log(row)
             row.forEach(
                 (col, cidx) => {
                     let colContent = col.toString()
                     if (isShowHighlight && cidx === contentColumnIndex) {
                         const hightLightText = row[highlightTextColumnIndex].toString()
-                        // const splitContent = this.splitContentWithCondition(colContent, hightLightText, Number(row[highlightTextPosition]), Number(row[highlightTextLength]))
-                        const customizedHighlightText = customizedTextByConfigurations(hightLightText)
-                        
-                        // colContent = splitContent.length >= 2 ? this.joinHighlightText(splitContent, customizedHighlightText) : colContent
-             
+                        const customizedHighlightText = customizedTextByConfigurations(hightLightText)             
                     }
 
                     if (cidx === contentColumnIndex) {
                         tRow
-                        .append('td').style('max-width', '400px').html(colContent);
+                        .append('td').attr('title', colContent).style('max-width', '400px').html(colContent);
                     } else tRow
-                        .append('td').html(colContent);
+                        .append('td').attr('title', colContent).html(colContent);
                     tRow
                         .style('background-color', backgroundColor)
                         .style('color', textColor);
@@ -395,7 +383,6 @@ export class Visual implements IVisual {
                     'border-left': verCSS,
                 })
             }
-            console.log('Table rendered!');
 
             const rowPadding = this.settings.gridOptions.rowPadding
             const globalFontSize = this.settings.gridOptions.globalFontSize
@@ -412,6 +399,12 @@ export class Visual implements IVisual {
     
             let selectionManager = this.selectionManager;
             let allowInteractions = this.host.allowInteractions;
+
+            console.log('Table rendered!');
+
+            this.bindingHeaderClicking()
+            
+            this.addTooltip()
             // console.log('dataViews[0].categorical', dataViews[0])
 
             // let identity = this.host.createSelectionIdBuilder()
@@ -420,21 +413,15 @@ export class Visual implements IVisual {
             
             // console.log(tBody)
             // d3.selectAll()
-            // tBody.on('click', (d) => {
-            //     const mouseEvent: MouseEvent = d3.event as MouseEvent;
-            //     const eventTarget: EventTarget = mouseEvent.target;
-
-            //     let dataPoint: any = d3Select<d3.BaseType, any>(eventTarget as d3.BaseType);
-
-            //     this.selectionManager.select(dataPoint);
-            //     mouseEvent.preventDefault();
-            // });
     }
 
     
+    private addTooltip = () => {
+        $('td').tooltip();
+    }
+    
 
-
-    private updatingBorder(tHead, tBody, setting, sectionName) {
+    private updatingBorder = (tHead, tBody, setting, sectionName) => {
 
         // resolve for all section
         const gridBorderDetail = `${setting.width}px solid ${setting.color}`
@@ -449,12 +436,10 @@ export class Visual implements IVisual {
             case 'value': {
                 this.addElementBorder(tBody, setting, gridBorderDetail)
             }
-
         }
-
     }
 
-    private addElementBorder (element, setting, borderSetting) {
+    private addElementBorder =  (element, setting, borderSetting) => {
         if (setting.topBorder) element.style('border-top', borderSetting)
         if (setting.leftBorder) element.style('border-bottom', borderSetting)
         if (setting.leftBorder ) element.style('border-left', borderSetting)
@@ -469,6 +454,20 @@ export class Visual implements IVisual {
         }
         
         return result
+    }
+
+    private bindingHeaderClicking () {
+        $('th').each((indx, th) => {
+            $(th).on('click', (d) => {
+                if (d.target.nodeName.toLowerCase() !== 'div') {
+                    let isAscDirection = sortTable(indx);
+                    $('th > i').remove();
+                    resizableGrid(document.getElementsByTagName('table')[0], true);
+                    isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
+                }
+                
+            })
+        })
     }
 
     private joinHighlightText = (arrayString: String[], highlightText: string): string => `${arrayString[0]}${highlightText}${arrayString[1]}`
