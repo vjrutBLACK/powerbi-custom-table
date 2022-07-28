@@ -1,9 +1,15 @@
 {
     "dataRoles": [
         {
-            "name": "values",
-            "kind": "GroupingOrMeasure",
-            "displayName": "Columns"
+            "displayName": "Rows",
+            "name": "dataRows",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Values",
+            "name": "dataValue",
+            "kind": "Measure"
+            
         }
     ],
     "sorting": {
@@ -435,13 +441,10 @@
     "supportsMultiVisualSelection": true,
     "dataViewMappings": [
         {
-            "categorical": {
-                "categories": {
-                    "for": {
-                        "in": "values"
-                    }
+            "table": {
+                "rows": {
+                    "select": [{"for": {"in": "dataRows"}},{"for": {"in": "dataValue"}}]
                 }
-        
             }
         }
     ]

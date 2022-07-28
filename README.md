@@ -1,4 +1,4 @@
-# powerbi-visuals-example-simple-table
+# powerbi-visuals-customized-table
 
 This is a very simple demonstration of the `table` data view mapping for the Power BI Custom Visuals SDK, and is [documented in this online post](https://coacervo.co/examples/table-dv-simple). Please refer to that article for further details.
 
@@ -17,3 +17,8 @@ pbiviz start
 ```
 
 To run the visual server. You can then test in the Power BI service.
+
+To package this visualization
+```
+pbiviz package
+```
