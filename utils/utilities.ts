@@ -12,7 +12,6 @@ const isExistingKeywordInContentWithCondition = (content: string, keyword: strin
 }
 
 export function addRow(el: HTMLTableRowElement, rowData, index: number, highLightTextCondition, customizedTextByConfigurations) {
-    console.log(rowData.values)
     d3.select(el).selectAll("td")
         .data(rowData.values)
         .enter().each( function (this, d, i) {
