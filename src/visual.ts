@@ -154,11 +154,13 @@ export class Visual implements IVisual {
 
             const headerTextColor = this.settings.columnHeader.headerTextColor
             const headerBackgroundColor = this.settings.columnHeader.headerBackgroundColor
-
+            const highlightedContentColumnIndx = []
 
             table.columns.forEach(
                 (col, cidx) => {
-                    switch (Object.assign(col.expr).ref || Object.assign(col.expr).arg.ref ) {
+                    const columnName = Object.assign(col.expr).ref || Object.assign(col.expr).arg.ref
+                    if (columnName.indexOf('文') > -1 || columnName.indexOf('文_') > -1) highlightedContentColumnIndx.push(cidx)
+                    switch (columnName) {
                         case '正規語': {
                             highlightTextColumnIndex = cidx;
                             break;
@@ -208,7 +210,8 @@ export class Visual implements IVisual {
             highlightTextColumnIndex: highlightTextColumnIndex,
             highlightTextPosition: highlightTextPosition,
             highlightTextLength: highlightTextLength,
-            contentColumnIndex: contentColumnIndex
+            contentColumnIndex: contentColumnIndex,
+            highlightedContentColumnIndx: highlightedContentColumnIndx
         }
         
         const alterTextColor = this.settings.valuesConfig.alterTextColor
