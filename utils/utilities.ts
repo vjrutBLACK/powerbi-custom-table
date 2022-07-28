@@ -57,8 +57,6 @@ export function visualTransform(options: VisualUpdateOptions, host: IVisualHost,
 
     // get references to the dataview for this update
     let dataViews = options.dataViews;
-    console.log(dataViews);
-    
 
     let viewModel = {
         tableRows: [],
