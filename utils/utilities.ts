@@ -17,17 +17,17 @@ export function addRow(el: HTMLTableRowElement, rowData, index: number, highLigh
         .enter().each( function (this, d, i) {
             let colContent = d.toString()
             if (highLightTextCondition.isShowHighlight && i === highLightTextCondition.contentColumnIndex) {
-                                const hightLightText = rowData.values[highLightTextCondition.highlightTextColumnIndex].toString()
-                                const hightLightTextPosition = rowData.values[highLightTextCondition.highlightTextPosition]
-                                const hightLightTextLength = rowData.values[highLightTextCondition.highlightTextLength]
+                const hightLightText = rowData.values[highLightTextCondition.highlightTextColumnIndex].toString()
+                const hightLightTextPosition = rowData.values[highLightTextCondition.highlightTextPosition]
+                const hightLightTextLength = rowData.values[highLightTextCondition.highlightTextLength]
 
-                                let isHighlight = isExistingKeywordInContentWithCondition(colContent, hightLightText, hightLightTextPosition, hightLightTextLength )
+                let isHighlight = isExistingKeywordInContentWithCondition(colContent, hightLightText, hightLightTextPosition, hightLightTextLength )
 
-                                const customizedHighlightText = customizedTextByConfigurations(hightLightText)
-                                const displayedContent = isHighlight ? colContent.replace(hightLightText, customizedHighlightText) : colContent
-                                d3.select(this)
-                                        .append('td').attr('title', colContent).style('max-width', '400px').html(displayedContent);
-                                return;
+                const customizedHighlightText = customizedTextByConfigurations(hightLightText)
+                const displayedContent = isHighlight ? colContent.replace(hightLightText, customizedHighlightText) : colContent
+                d3.select(this)
+                        .append('td').attr('title', colContent).style('max-width', '400px').html(displayedContent);
+                return;
             }
             if (i === highLightTextCondition.contentColumnIndex) {
                 d3.select(this)
@@ -47,6 +47,8 @@ export function visualTransform(options: VisualUpdateOptions, host: IVisualHost,
 
     // get references to the dataview for this update
     let dataViews = options.dataViews;
+    console.log(dataViews);
+    
 
     let viewModel = {
         tableRows: [],

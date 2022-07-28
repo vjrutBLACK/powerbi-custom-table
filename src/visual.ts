@@ -158,7 +158,7 @@ export class Visual implements IVisual {
 
             table.columns.forEach(
                 (col, cidx) => {
-                    switch (col.displayName) {
+                    switch (Object.assign(col.expr).ref || Object.assign(col.expr).arg.ref ) {
                         case '正規語': {
                             highlightTextColumnIndex = cidx;
                             break;
@@ -194,10 +194,14 @@ export class Visual implements IVisual {
                 }   
             );
 
+
+
         /** Now add rows and columns for each row of data */
 
     
         const isShowHighlight: boolean = [highlightTextColumnIndex , highlightTextPosition, highlightTextLength].every(el => el > -1)
+        console.log('isShowHighlight', isShowHighlight)
+        console.log('contentColumnIndex', contentColumnIndex)
 
         const highLightTextCondition = {
             isShowHighlight: isShowHighlight,
