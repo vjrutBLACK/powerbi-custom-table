@@ -53,7 +53,6 @@ export interface VisualDataPoint extends interactivitySelectionService.Selectabl
     value: powerbi.PrimitiveValue;
 }
 import {sortTable} from "../utils/sort-table";
-import { select as d3Select } from "d3-selection";
 
 
 import { addRow, visualTransform } from '../utils/utilities'
@@ -199,6 +198,14 @@ export class Visual implements IVisual {
 
     
         const isShowHighlight: boolean = [highlightTextColumnIndex , highlightTextPosition, highlightTextLength].every(el => el > -1)
+
+        const highLightTextCondition = {
+            isShowHighlight: isShowHighlight,
+            highlightTextColumnIndex: highlightTextColumnIndex,
+            highlightTextPosition: highlightTextPosition,
+            highlightTextLength: highlightTextLength,
+            contentColumnIndex: contentColumnIndex
+        }
         
         const alterTextColor = this.settings.valuesConfig.alterTextColor
         const textColor = this.settings.valuesConfig.textColor
@@ -207,9 +214,6 @@ export class Visual implements IVisual {
         const isWrappedText = this.settings.valuesConfig.textWrap
                 
         let tBody = this.container.append('tbody')
-
-        let tempSettings = this.settings
-
 
         d3.select('tbody')
             .selectAll("tr")
@@ -228,7 +232,7 @@ export class Visual implements IVisual {
                     d3.select(this).style('background-color', alterBackgroundColor)
                                 .style('color', alterTextColor);
                 }
-                addRow(this, d, i, tempSettings, isShowHighlight, highlightTextColumnIndex, contentColumnIndex, customizedTextByConfigurations ); 
+                addRow(this, d, i, highLightTextCondition, customizedTextByConfigurations); 
             })
 
 
@@ -323,16 +327,6 @@ export class Visual implements IVisual {
         if (setting.rightBorder) element.style('border-right', borderSetting)
     }
 
-    private splitContentWithCondition = (content: string, keyword: string, index: number, length: number): Array<String> =>{
-        let result = []
-        if (content.slice(index, index + length) === keyword) {
-            result.push(content.slice(0, index))
-            result.push(content.slice(index + length, content.length))
-        }
-        
-        return result
-    }
-
     private bindingHeaderClicking () {
         $('th').each((indx, th) => {
             $(th).on('click', (d) => {
@@ -346,8 +340,6 @@ export class Visual implements IVisual {
             })
         })
     }
-
-    private joinHighlightText = (arrayString: String[], highlightText: string): string => `${arrayString[0]}${highlightText}${arrayString[1]}`
 
     public getSettings(): VisualSettings {
         return this.settings;

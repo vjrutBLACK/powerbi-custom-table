@@ -7,21 +7,30 @@ import ISelectionId = powerbi.visuals.ISelectionId;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 
-export function addRow(el: HTMLTableRowElement, rowData, indx: number, settings: VisualSettings, isShowHighlight, highlightTextColumnIndex, contentColumnIndex, customizedTextByConfigurations) {
+const isExistingKeywordInContentWithCondition = (content: string, keyword: string, index: number, length: number): boolean =>{
+    return content.slice(index, index + length) === keyword
+}
+
+export function addRow(el: HTMLTableRowElement, rowData, index: number, highLightTextCondition, customizedTextByConfigurations) {
+    console.log(rowData.values)
     d3.select(el).selectAll("td")
         .data(rowData.values)
         .enter().each( function (this, d, i) {
             let colContent = d.toString()
-            if (isShowHighlight && i === contentColumnIndex) {
-                
-                                const hightLightText = rowData.values[highlightTextColumnIndex].toString()
+            if (highLightTextCondition.isShowHighlight && i === highLightTextCondition.contentColumnIndex) {
+                                const hightLightText = rowData.values[highLightTextCondition.highlightTextColumnIndex].toString()
+                                const hightLightTextPosition = rowData.values[highLightTextCondition.highlightTextPosition]
+                                const hightLightTextLength = rowData.values[highLightTextCondition.highlightTextLength]
+
+                                let isHighlight = isExistingKeywordInContentWithCondition(colContent, hightLightText, hightLightTextPosition, hightLightTextLength )
+
                                 const customizedHighlightText = customizedTextByConfigurations(hightLightText)
-                                const newColContent = colContent.replace(hightLightText, customizedHighlightText)             
-                                    d3.select(this)
-                                        .append('td').attr('title', colContent).style('max-width', '400px').html(newColContent);
+                                const displayedContent = isHighlight ? colContent.replace(hightLightText, customizedHighlightText) : colContent
+                                d3.select(this)
+                                        .append('td').attr('title', colContent).style('max-width', '400px').html(displayedContent);
                                 return;
             }
-            if (i === contentColumnIndex) {
+            if (i === highLightTextCondition.contentColumnIndex) {
                 d3.select(this)
                     .append('td').attr('title', colContent).style('max-width', '400px').html(colContent);
                     return;
