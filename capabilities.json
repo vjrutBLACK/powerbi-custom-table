@@ -439,6 +439,9 @@
                 "rows": {
                     "for": {
                         "in": "values"
+                    },
+                    "dataReductionAlgorithm": {
+                        "top": {"count": 7000}
                     }
                 }
             }

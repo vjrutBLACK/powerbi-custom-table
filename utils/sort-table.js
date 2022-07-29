@@ -4,6 +4,7 @@ import $ from "jquery"
 export function sortTable(c) {
     let table = $('#custom-table')[0];
     let  rows = table.rows.length; // num of rows
+    console.log(rows)
     let columns = table.rows[0].cells.length; // num of columns
     let   arrTable = [...Array(rows)].map(e => Array(columns)); // create an empty 2d array
 

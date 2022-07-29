@@ -116,6 +116,8 @@ export class Visual implements IVisual {
 
             let viewModel = visualTransform(options, this.host, this.settings);
 
+            console.log(viewModel)
+
             if (!dataViews
                 || !dataViews[0]
                 || !dataViews[0].table
