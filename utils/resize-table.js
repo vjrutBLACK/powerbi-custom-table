@@ -1,10 +1,11 @@
-
+import $ from 'jquery';
 var tables = document.getElementsByTagName('table');
 for (var i=0; i<tables.length;i++){
  resizableGrid(tables[i]);
 }
 
-export function resizableGrid(table, isSorted = false) {
+export function resizableGrid(table, columnSizes, isSorted = false) {
+
  var row = table.getElementsByTagName('tr')[0],
  cols = row ? row.children : undefined;
  if (!cols) return;
@@ -40,6 +41,7 @@ export function resizableGrid(table, isSorted = false) {
   })
 
   div.addEventListener('mouseout', function (e) {
+
    e.target.style.borderRight = '';
   })
 
@@ -47,10 +49,15 @@ export function resizableGrid(table, isSorted = false) {
    if (curCol) {
     var diffX = e.pageX - pageX;
  
-    if (nxtCol)
-     nxtCol.style.width = (nxtColWidth - (diffX))+'px';
+    if (nxtCol) {
+        nxtCol.style.width = (nxtColWidth - (diffX))+'px';
+        // columnSizes[$(nxtCol).find('span')[0].innerText] = nxtCol.style.width
+    }
 
     curCol.style.width = (curColWidth + diffX)+'px';
+
+    columnSizes[$(curCol).find('span')[0].innerText] = curCol.style.width
+
    }
   });
 
@@ -90,5 +97,7 @@ export function resizableGrid(table, isSorted = false) {
  function getStyleVal(elm,css){
   return (window.getComputedStyle(elm, null).getPropertyValue(css))
  }
+
+ return columnSizes
 };
 

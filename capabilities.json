@@ -1,15 +1,9 @@
 {
     "dataRoles": [
         {
-            "displayName": "Rows",
-            "name": "dataRows",
-            "kind": "Grouping"
-        },
-        {
-            "displayName": "Values",
-            "name": "dataValue",
-            "kind": "Measure"
-            
+            "name": "values",
+            "kind": "GroupingOrMeasure",
+            "displayName": "Columns"
         }
     ],
     "sorting": {
@@ -443,7 +437,9 @@
         {
             "table": {
                 "rows": {
-                    "select": [{"for": {"in": "dataRows"}},{"for": {"in": "dataValue"}}]
+                    "for": {
+                        "in": "values"
+                    }
                 }
             }
         }

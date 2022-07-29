@@ -37,6 +37,7 @@ import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInst
 import VisualObjectInstance = powerbi.VisualObjectInstance;
 import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
+import ILocalVisualStorageService = powerbi.extensibility.ILocalVisualStorageService;
 import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import { VisualSettings } from "./settings";
@@ -65,6 +66,7 @@ export class Visual implements IVisual {
     private container: Selection<any>;
     private host: IVisualHost;
     private tableDefinition: any;
+    private columnSizes = [];
     private events: IVisualEventService;
     private selectionManager: ISelectionManager;
     private interactivity: interactivityBaseService.IInteractivityService<VisualDataPoint>;
@@ -78,7 +80,7 @@ export class Visual implements IVisual {
 
         this.interactivity = interactivitySelectionService.createInteractivitySelectionService(this.host);
 
-
+        // localStorage.setItem('columnSizes',JSON.stringify(columnSizes))
 
         /** Visual container */
         this.target = options.element;
@@ -154,11 +156,14 @@ export class Visual implements IVisual {
 
             const headerTextColor = this.settings.columnHeader.headerTextColor
             const headerBackgroundColor = this.settings.columnHeader.headerBackgroundColor
-
+            let INDEXColumnIndex = -1
+            const highlightedContentColumnIndx = []
 
             table.columns.forEach(
                 (col, cidx) => {
-                    switch (col.displayName) {
+                    const columnName = Object.assign(col.expr).ref || Object.assign(col.expr).arg.ref
+                    if (columnName.indexOf('文') > -1 || columnName.indexOf('文_') > -1) highlightedContentColumnIndx.push(cidx)
+                    switch (columnName) {
                         case '正規語': {
                             highlightTextColumnIndex = cidx;
                             break;
@@ -175,6 +180,10 @@ export class Visual implements IVisual {
                             contentColumnIndex = cidx;
                             break;
                         }
+                        case 'INDEX': {
+                            INDEXColumnIndex = cidx;
+                            break;
+                        }
                     }
 
                      
@@ -188,11 +197,15 @@ export class Visual implements IVisual {
                             .style('font-weight', this.settings.columnHeader.bold ? 700 : 500)
                             .style('font-style', this.settings.columnHeader.ilatic ? 'italic' : 'unset')
                             .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none')
+                            .style('min-width', INDEXColumnIndex > -1 ? 'auto' : '100px')
+                            .style('width', this.columnSizes[col.displayName])
                             .append('span')
                             .text(col.displayName)
                             ;
                 }   
             );
+
+
 
         /** Now add rows and columns for each row of data */
 
@@ -204,7 +217,8 @@ export class Visual implements IVisual {
             highlightTextColumnIndex: highlightTextColumnIndex,
             highlightTextPosition: highlightTextPosition,
             highlightTextLength: highlightTextLength,
-            contentColumnIndex: contentColumnIndex
+            contentColumnIndex: contentColumnIndex,
+            highlightedContentColumnIndx: highlightedContentColumnIndx
         }
         
         const alterTextColor = this.settings.valuesConfig.alterTextColor
@@ -278,7 +292,11 @@ export class Visual implements IVisual {
 
 
         
-        resizableGrid(document.getElementsByTagName('table')[0])
+        this.columnSizes = resizableGrid(document.getElementsByTagName('table')[0], this.columnSizes)
+
+
+        // localStorage.setItem('columnSizes',JSON.stringify(columnSizes))
+
 
 
         let behavior = new Behavior();
@@ -333,7 +351,7 @@ export class Visual implements IVisual {
                 if (d.target.nodeName.toLowerCase() !== 'div') {
                     let isAscDirection = sortTable(indx);
                     $('th > i').remove();
-                    resizableGrid(document.getElementsByTagName('table')[0], true);
+                    resizableGrid(document.getElementsByTagName('table')[0],this.columnSizes, true);
                     isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
                 }
                 

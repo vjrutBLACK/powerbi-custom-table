@@ -12,32 +12,41 @@ const isExistingKeywordInContentWithCondition = (content: string, keyword: strin
 }
 
 export function addRow(el: HTMLTableRowElement, rowData, index: number, highLightTextCondition, customizedTextByConfigurations) {
-    console.log(rowData.values)
     d3.select(el).selectAll("td")
         .data(rowData.values)
         .enter().each( function (this, d, i) {
+            const isColContainsContent =  highLightTextCondition.highlightedContentColumnIndx.includes(i)
             let colContent = d.toString()
             if (highLightTextCondition.isShowHighlight && i === highLightTextCondition.contentColumnIndex) {
-                                const hightLightText = rowData.values[highLightTextCondition.highlightTextColumnIndex].toString()
-                                const hightLightTextPosition = rowData.values[highLightTextCondition.highlightTextPosition]
-                                const hightLightTextLength = rowData.values[highLightTextCondition.highlightTextLength]
+                const hightLightText = rowData.values[highLightTextCondition.highlightTextColumnIndex].toString()
+                const hightLightTextPosition = rowData.values[highLightTextCondition.highlightTextPosition]
+                const hightLightTextLength = rowData.values[highLightTextCondition.highlightTextLength]
 
-                                let isHighlight = isExistingKeywordInContentWithCondition(colContent, hightLightText, hightLightTextPosition, hightLightTextLength )
+                let isHighlight = isExistingKeywordInContentWithCondition(colContent, hightLightText, hightLightTextPosition, hightLightTextLength )
 
-                                const customizedHighlightText = customizedTextByConfigurations(hightLightText)
-                                const displayedContent = isHighlight ? colContent.replace(hightLightText, customizedHighlightText) : colContent
-                                d3.select(this)
-                                        .append('td').attr('title', colContent).style('max-width', '400px').html(displayedContent);
-                                return;
+                const customizedHighlightText = customizedTextByConfigurations(hightLightText)
+                const displayedContent = isHighlight ? colContent.replace(hightLightText, customizedHighlightText) : colContent
+                d3.select(this)
+                        .append('td').attr('title', colContent)
+                        .style('max-width', '400px')
+                        .style('min-width', '400px')
+                        .html(displayedContent);
+                return;
             }
             if (i === highLightTextCondition.contentColumnIndex) {
                 d3.select(this)
-                    .append('td').attr('title', colContent).style('max-width', '400px').html(colContent);
+                    .append('td').attr('title', colContent)
+                    .style('max-width', '400px')
+                    .style('min-width', '400px')
+                    .html(colContent);
                     return;
             }
             
             d3.select(this)
-                    .append('td').attr('title', colContent).html(colContent);
+                    .append('td')
+                    .style('max-width', isColContainsContent ? '400px' : 'auto')
+                    .style('min-width', isColContainsContent ? '400px' : 'auto')
+                    .attr('title', colContent).html(colContent);
             }
         )
 
