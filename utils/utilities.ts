@@ -17,7 +17,7 @@ export function addRow(el: HTMLTableRowElement, rowData, index: number, highLigh
         .enter().each( function (this, d, i) {
             const isColContainsContent =  highLightTextCondition.highlightedContentColumnIndx.includes(i)
             let colContent = d.toString()
-            if (highLightTextCondition.isShowHighlight && i === highLightTextCondition.contentColumnIndex) {
+            if (highLightTextCondition.isShowHighlight && isColContainsContent) {
                 const hightLightText = rowData.values[highLightTextCondition.highlightTextColumnIndex].toString()
                 const hightLightTextPosition = rowData.values[highLightTextCondition.highlightTextPosition]
                 const hightLightTextLength = rowData.values[highLightTextCondition.highlightTextLength]
@@ -27,31 +27,38 @@ export function addRow(el: HTMLTableRowElement, rowData, index: number, highLigh
                 const customizedHighlightText = customizedTextByConfigurations(hightLightText)
                 const displayedContent = isHighlight ? colContent.replace(hightLightText, customizedHighlightText) : colContent
                 d3.select(this)
-                        .append('td').attr('title', colContent)
-                        .style('max-width', '400px')
-                        .style('min-width', '400px')
+                        .append('td').attr('title', cleanString(colContent))
+                        .style('max-width', '10px')
+                        .style('width', '400px')
+
+                        // .style('min-width', '400px')
                         .html(displayedContent);
                 return;
             }
-            if (i === highLightTextCondition.contentColumnIndex) {
+            if (isColContainsContent) {
                 d3.select(this)
-                    .append('td').attr('title', colContent)
-                    .style('max-width', '400px')
-                    .style('min-width', '400px')
+                .append('td').attr('title', cleanString(colContent))
+                .style('max-width', '10px')
+                    .style('width', '400px')
+                    // .style('min-width', '400px')
                     .html(colContent);
                     return;
             }
             
             d3.select(this)
                     .append('td')
-                    .style('max-width', isColContainsContent ? '400px' : 'auto')
-                    .style('min-width', isColContainsContent ? '400px' : 'auto')
-                    .attr('title', colContent).html(colContent);
+                    .style('max-width', '10px')
+                    .attr('title', cleanString(colContent)).html(colContent);
             }
         )
 
 
 }
+
+function cleanString(s) {
+    return s.replace( /(<([^>]+)>)/ig, '');
+ }
+
 
 export function visualTransform(options: VisualUpdateOptions, host: IVisualHost, vSettings: VisualSettings) {
 
@@ -74,7 +81,6 @@ export function visualTransform(options: VisualUpdateOptions, host: IVisualHost,
         || !dataViews[0].table.columns
         || !dataViews[0].metadata
     ) {
-        console.log('return blank')
         return viewModel;
     }
     

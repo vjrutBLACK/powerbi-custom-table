@@ -139,7 +139,7 @@
             }
         },
         "headerGridBorder": {
-            "displayName": "Column header",
+            "displayName": "Column header border",
             "properties": {
                 "topBorder": {
                     "displayName": "Top border",
@@ -188,7 +188,7 @@
             }
         },
         "valueSectionGridBorder": {
-            "displayName": "Value section",
+            "displayName": "Value section border",
             "properties": {
                 "topBorder": {
                     "displayName": "Top border",
@@ -441,7 +441,7 @@
                         "in": "values"
                     },
                     "dataReductionAlgorithm": {
-                        "top": {"count": 7000}
+                        "top": {"count": 8000}
                     }
                 }
             }

@@ -21,6 +21,7 @@ export interface BaseBehaviorOptions<SelectableDataPointType extends BaseDataPoi
     clearCatcherSelection: d3.Selection<any, any, any, any>;
 }
 
+let cache: any;
 export class Behavior<SelectableDataPointType extends BaseDataPoint> implements IInteractiveBehavior {
 
     /** d3 selection object of main elements in the chart */
@@ -32,17 +33,22 @@ export class Behavior<SelectableDataPointType extends BaseDataPoint> implements 
             elementsSelection,
             dataPoints
         } = this.options;
+
+        // cache()
+        // console.log(cache)
+        
  
         elementsSelection.on("click", (datum) => {
 
             let sentDatumb = dataPoints.find(el => Object.assign(el).value == datum)
+            console.log(sentDatumb) 
             const mouseEvent: MouseEvent = window.event as MouseEvent;
             mouseEvent && this.selectionHandler.handleSelection(sentDatumb, mouseEvent.ctrlKey);
-            $(d3.event.target.parentNode).children("*").css("opacity",1)
         });
     }
 
     protected bindClearCatcher() {
+        console.log('clear')
       // ...
     }
 
@@ -55,7 +61,6 @@ export class Behavior<SelectableDataPointType extends BaseDataPoint> implements 
         elementsSelection.on("contextmenu", (datum) => {
             const event: MouseEvent = window.event as MouseEvent;
             if (event) {
-                console.log('Button Click');
                 let sentDatumb = dataPoints.find(el => Object.assign(el).value == datum)
                 this.selectionHandler.handleContextMenu(
                     sentDatumb,

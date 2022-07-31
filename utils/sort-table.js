@@ -4,10 +4,12 @@ import $ from "jquery"
 export function sortTable(c) {
     let table = $('#custom-table')[0];
     let  rows = table.rows.length; // num of rows
-    console.log(rows)
     let columns = table.rows[0].cells.length; // num of columns
     let   arrTable = [...Array(rows)].map(e => Array(columns)); // create an empty 2d array
-
+        
+        function cleanString(s) {
+           return s.replace( /(<([^>]+)>)/ig, '');
+        }
     
         for (let ro=0; ro<rows; ro++) { // cycle through rows
             for (let co=0; co<columns; co++) { // cycle through columns
@@ -22,10 +24,10 @@ export function sortTable(c) {
             isASCDirection = true
             arrTable.sort(
                 function (a, b) {
-                    if (a[c] === b[c]) {
+                    if (cleanString(a[c]) === cleanString(b[c])) {
                         return 0;
                     } else {
-                        return (a[c] < b[c]) ? -1 : 1;
+                        return cleanString(a[c]).localeCompare(cleanString(b[c]), 'ja');
                     }
                 }
             );

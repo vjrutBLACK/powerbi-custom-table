@@ -45,7 +45,6 @@ import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import * as d3select from 'd3-selection';
 import * as d3 from "d3";
 
-
 import $ from 'jquery';
 import { resizableGrid } from '../utils/resize-table'
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
@@ -85,7 +84,7 @@ export class Visual implements IVisual {
         /** Visual container */
         this.target = options.element;
         this.container = d3select.select(options.element)
-            .append('div').style('width', '2000vh')
+            .append('div')
                 .append('table').attr('id', 'custom-table');
 
 
@@ -115,8 +114,6 @@ export class Visual implements IVisual {
             let dataViews = options.dataViews;    
 
             let viewModel = visualTransform(options, this.host, this.settings);
-
-            console.log(viewModel)
 
             if (!dataViews
                 || !dataViews[0]
@@ -199,10 +196,14 @@ export class Visual implements IVisual {
                             .style('font-weight', this.settings.columnHeader.bold ? 700 : 500)
                             .style('font-style', this.settings.columnHeader.ilatic ? 'italic' : 'unset')
                             .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none')
-                            .style('min-width', INDEXColumnIndex > -1 ? 'auto' : '100px')
-                            .style('width', this.columnSizes[col.displayName])
+                            // .style('min-width', INDEXColumnIndex > -1 ? 'auto' : '100px')
+                            // @ts-ignore
+                            .style('width',highlightedContentColumnIndx.includes(cidx) ? "400px" : "auto")
+                            .style('width', this.columnSizes[columnName])
+                            .style('min-width', this.columnSizes[columnName] || "auto")
+                            .style('max-width', this.columnSizes[columnName] || "auto")
                             .append('span')
-                            .text(col.displayName)
+                            .text(columnName)
                             ;
                 }   
             );
@@ -293,15 +294,14 @@ export class Visual implements IVisual {
         this.updatingBorder(tHead, tBody, this.settings.valueSectionGridBorder, 'value')
 
 
-        
         this.columnSizes = resizableGrid(document.getElementsByTagName('table')[0], this.columnSizes)
 
 
-        // localStorage.setItem('columnSizes',JSON.stringify(columnSizes))
 
 
 
         let behavior = new Behavior();
+        // @ts-ignore
         this.interactivity.bind(<BaseBehaviorOptions<VisualDataPoint>>{
             behavior: behavior,
             dataPoints: viewModel.data,
@@ -318,7 +318,11 @@ export class Visual implements IVisual {
 
     
     private addTooltip = () => {
+                $('th').each(function (index, element) {
+                    $(this).removeAttr( "title" )
+                });
         $('td').tooltip();
+
     }
     
 
@@ -347,6 +351,7 @@ export class Visual implements IVisual {
         if (setting.rightBorder) element.style('border-right', borderSetting)
     }
 
+
     private bindingHeaderClicking () {
         $('th').each((indx, th) => {
             $(th).on('click', (d) => {
@@ -354,7 +359,7 @@ export class Visual implements IVisual {
                     let isAscDirection = sortTable(indx);
                     $('th > i').remove();
                     resizableGrid(document.getElementsByTagName('table')[0],this.columnSizes, true);
-                    isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
+                    !isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
                 }
                 
             })
