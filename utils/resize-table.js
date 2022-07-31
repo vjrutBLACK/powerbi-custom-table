@@ -7,7 +7,7 @@ for (var i=0; i<tables.length;i++){
 
 
 
-export function resizableGrid(table, columnSizes, isSorted = false) {
+export function resizableGrid(table, columnSizes, resizeAction, isSorted = false) {
     // console.log('resize')
     // $("table").colResizable({
     //     // postbackSafe: true,
@@ -73,7 +73,9 @@ export function resizableGrid(table, columnSizes, isSorted = false) {
     curCol.style.maxWidth = (curColWidth + diffX)+'px';
 
     $("table").width(remainingTableWidth + parseInt(curCol.style.width))
-    columnSizes[$(curCol).find('span')[0].innerText] = curCol.style.width
+    let colName = $(curCol).find('span')[0].innerText
+    columnSizes[colName] = curCol.style.width
+
 
    }
   });
@@ -84,6 +86,9 @@ export function resizableGrid(table, columnSizes, isSorted = false) {
    pageX = undefined;
    nxtColWidth = undefined;
    curColWidth = undefined
+   console.log('up')
+   resizeAction(columnSizes)
+
   });
  }
  

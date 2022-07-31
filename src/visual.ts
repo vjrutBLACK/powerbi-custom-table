@@ -44,7 +44,6 @@ import { VisualSettings } from "./settings";
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import * as d3select from 'd3-selection';
 import * as d3 from "d3";
-
 import $ from 'jquery';
 import { resizableGrid } from '../utils/resize-table'
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
@@ -54,7 +53,7 @@ export interface VisualDataPoint extends interactivitySelectionService.Selectabl
 }
 import {sortTable} from "../utils/sort-table";
 
-
+import Encoding from 'encoding-japanese';
 import { addRow, visualTransform } from '../utils/utilities'
 import { Behavior, Selection, BaseBehaviorOptions } from './behaviorHandler'
 
@@ -65,27 +64,65 @@ export class Visual implements IVisual {
     private container: Selection<any>;
     private host: IVisualHost;
     private tableDefinition: any;
-    private columnSizes = [];
+    private columnSizes = {};
+    private alterColumnSizes = [];
     private events: IVisualEventService;
     private selectionManager: ISelectionManager;
+    private updateCountName: string = 'updateCount';
+    private updateCount: number = 0;
+    private storage: ILocalVisualStorageService;
     private interactivity: interactivityBaseService.IInteractivityService<VisualDataPoint>;
+
 
     
     constructor(options: VisualConstructorOptions) {
 
         this.host = options.host;
+
         this.events = options.host.eventService;
         this.selectionManager = this.host.createSelectionManager();
 
         this.interactivity = interactivitySelectionService.createInteractivitySelectionService(this.host);
 
-        // localStorage.setItem('columnSizes',JSON.stringify(columnSizes))
-
+        this.storage = options.host.storageService;
         /** Visual container */
         this.target = options.element;
         this.container = d3select.select(options.element)
             .append('div')
                 .append('table').attr('id', 'custom-table');
+
+        this.storage.get('columnSizes').then(sizes =>
+            {
+                if (sizes.length > 0) {
+                    this.alterColumnSizes = JSON.parse(sizes)
+                    //@ts-ignore
+                    let columnNames: Array = this.alterColumnSizes.columnName.map(n => {
+                        let unicodeArray = Encoding.convert(n, {
+                            to: 'UNICODE',
+                            from: 'SJIS'
+                          });
+                          return Encoding.codeToString(unicodeArray)
+                    })
+                    
+                    // @ts-ignore
+                    this.columnSizes = this.alterColumnSizes.columnWidth.reduce(function(result, field, index) {
+                        result[columnNames[index]] = field;
+                        return result;
+                      }, {})
+
+                    console.log(this.columnSizes)
+                   
+                
+                }
+                else this.alterColumnSizes = []
+            })
+            .catch(() =>
+            {
+                console.log('catch')
+                this.alterColumnSizes = [];
+                this.storage.set('columnSizes', JSON.stringify(this.alterColumnSizes));
+            });
+
 
 
     }
@@ -93,6 +130,7 @@ export class Visual implements IVisual {
 
 
     public update(options: VisualUpdateOptions) {
+        console.log(options)
         this.events.renderingStarted(options);
 
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
@@ -158,6 +196,94 @@ export class Visual implements IVisual {
             const headerBackgroundColor = this.settings.columnHeader.headerBackgroundColor
             let INDEXColumnIndex = -1
             const highlightedContentColumnIndx = []
+            console.log('get storge')
+                        this.storage.get('columnSizes').then(sizes =>
+                            {   
+                                console.log('get', sizes)
+                                    this.alterColumnSizes = JSON.parse(sizes)
+                                    console.log('alter' ,this.alterColumnSizes)
+                                    if (this.alterColumnSizes) {
+                                        //@ts-ignore
+                                        let columnNames: Array = this.alterColumnSizes.columnName.map(n => {
+                                            let unicodeArray = Encoding.convert(n, {
+                                                to: 'UNICODE',
+                                                from: 'SJIS'
+                                            });
+                                            return Encoding.codeToString(unicodeArray)
+                                        })
+                                        
+                                        // @ts-ignore
+                                        this.columnSizes = this.alterColumnSizes.columnWidth.reduce(function(result, field, index) {
+                                            result[columnNames[index]] = field;
+                                            return result;
+                                        }, {})
+                                    }
+                                    initThead()
+
+                            })
+                .catch(() =>
+                {   
+                    console.log('catch 2')
+                    this.alterColumnSizes = [];
+                    this.storage.set('columnSizes', JSON.stringify(this.alterColumnSizes));
+                    initThead()
+                });
+
+            const initThead = () => {
+                console.log(this.columnSizes)
+                table.columns.forEach(
+                    (col, cidx) => {
+                        const columnName = Object.assign(col.expr).ref || Object.assign(col.expr).arg.ref
+                        tHead
+                        .append('th')
+                            .style('background-color', headerBackgroundColor)
+                            .style('color', headerTextColor)
+                            .style('text-align', this.settings.columnHeader.alignmentText ?? "center")
+                            .style('font-family', this.settings.columnHeader.fontFamily)
+                            .style('font-size', `${this.settings.columnHeader.fontSize}pt`)
+                            .style('font-weight', this.settings.columnHeader.bold ? 700 : 500)
+                            .style('font-style', this.settings.columnHeader.ilatic ? 'italic' : 'unset')
+                            .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none')
+                            //@ts-ignore
+                            .style('width',highlightedContentColumnIndx.includes(cidx) ? "400px" : "auto")
+                            .style('width', this.columnSizes[columnName] || "auto")
+                            .style('min-width', this.columnSizes[columnName] || "auto")
+                            .style('max-width', this.columnSizes[columnName] || "auto")
+                            .append('span')
+                            .text(columnName)
+                            ;
+
+                        })
+
+                        const resizeAction = (params) => {
+                            // @ts-ignore
+                
+                            let columnNameArray = Object.keys(params).map(el =>{
+                                    const unicodeArray = Encoding.stringToCode(el); // Convert string to code array
+                                    return Encoding.convert(unicodeArray, {
+                                    to: 'SJIS',
+                                    from: 'UNICODE'
+                                    });
+                            })
+                
+                            // @ts-ignore
+                            let columnWidthArray = Object.values(params)
+                            let sendingParam = { 'columnName' : columnNameArray, 'columnWidth': columnWidthArray}
+                
+                            // @ts-ignore
+                            const paramConverted = JSON.stringify(sendingParam)
+
+                            console.log('set param ', paramConverted)
+                            this.storage.set('columnSizes',  paramConverted);
+                            this.storage.get('columnSizes').then(el => console.log(el)).catch(err => console.log(err));
+                        }
+                        this.columnSizes = resizableGrid(document.getElementsByTagName('table')[0], this.columnSizes, resizeAction)
+                        this.bindingHeaderClicking()
+                        $('th').each(function (index, element) {
+                            console.log('remove header title')
+                            $(this).removeAttr( "title" )
+                        });
+            }
 
             table.columns.forEach(
                 (col, cidx) => {
@@ -186,26 +312,9 @@ export class Visual implements IVisual {
                         }
                     }
 
-                     
-                    tHead
-                        .append('th')
-                            .style('background-color', headerBackgroundColor)
-                            .style('color', headerTextColor)
-                            .style('text-align', this.settings.columnHeader.alignmentText ?? "center")
-                            .style('font-family', this.settings.columnHeader.fontFamily)
-                            .style('font-size', `${this.settings.columnHeader.fontSize}pt`)
-                            .style('font-weight', this.settings.columnHeader.bold ? 700 : 500)
-                            .style('font-style', this.settings.columnHeader.ilatic ? 'italic' : 'unset')
-                            .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none')
+
                             // .style('min-width', INDEXColumnIndex > -1 ? 'auto' : '100px')
                             // @ts-ignore
-                            .style('width',highlightedContentColumnIndx.includes(cidx) ? "400px" : "auto")
-                            .style('width', this.columnSizes[columnName] || "auto")
-                            .style('min-width', this.columnSizes[columnName] || "auto")
-                            .style('max-width', this.columnSizes[columnName] || "auto")
-                            .append('span')
-                            .text(columnName)
-                            ;
 
                             
                 }   
@@ -295,10 +404,7 @@ export class Visual implements IVisual {
         this.updatingBorder(tHead, tBody, this.settings.headerGridBorder, 'header')
         this.updatingBorder(tHead, tBody, this.settings.valueSectionGridBorder, 'value')
 
-
-        this.columnSizes = resizableGrid(document.getElementsByTagName('table')[0], this.columnSizes)
-
-
+        let oldSize = this.columnSizes
 
         let behavior = new Behavior();
         // @ts-ignore
@@ -308,9 +414,8 @@ export class Visual implements IVisual {
             clearCatcherSelection: d3.select(this.target),
             elementsSelection: d3.selectAll('td')
         });
+
         
-        this.bindingHeaderClicking()
-        this.addTooltip()
 
         console.log('Table rendered!');
 
@@ -321,9 +426,6 @@ export class Visual implements IVisual {
     }
     
     private addTooltip = () => {
-                $('th').each(function (index, element) {
-                    $(this).removeAttr( "title" )
-                });
         $('td').tooltip();
 
     }
@@ -361,7 +463,7 @@ export class Visual implements IVisual {
                 if (d.target.nodeName.toLowerCase() !== 'div') {
                     let isAscDirection = sortTable(indx);
                     $('th > i').remove();
-                    resizableGrid(document.getElementsByTagName('table')[0],this.columnSizes, true);
+                    resizableGrid(document.getElementsByTagName('table')[0],this.columnSizes, () => {}, true);
                     !isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
                 }
                 
