@@ -91,6 +91,7 @@ export class Visual implements IVisual {
     }
 
 
+
     public update(options: VisualUpdateOptions) {
         this.events.renderingStarted(options);
 
@@ -199,12 +200,14 @@ export class Visual implements IVisual {
                             // .style('min-width', INDEXColumnIndex > -1 ? 'auto' : '100px')
                             // @ts-ignore
                             .style('width',highlightedContentColumnIndx.includes(cidx) ? "400px" : "auto")
-                            .style('width', this.columnSizes[columnName])
+                            .style('width', this.columnSizes[columnName] || "auto")
                             .style('min-width', this.columnSizes[columnName] || "auto")
                             .style('max-width', this.columnSizes[columnName] || "auto")
                             .append('span')
                             .text(columnName)
                             ;
+
+                            
                 }   
             );
 
@@ -287,7 +290,6 @@ export class Visual implements IVisual {
         const rowPadding = this.settings.gridOptions.rowPadding
         const globalFontSize = this.settings.gridOptions.globalFontSize
         $(this.target).find("td").css('padding', `${rowPadding}px`)
-        $(this.target).find("td").css('font-size', `${globalFontSize}px`)
 
         this.updatingBorder(tHead, tBody, this.settings.allGridBorder, 'all')
         this.updatingBorder(tHead, tBody, this.settings.headerGridBorder, 'header')
@@ -295,8 +297,6 @@ export class Visual implements IVisual {
 
 
         this.columnSizes = resizableGrid(document.getElementsByTagName('table')[0], this.columnSizes)
-
-
 
 
 
@@ -316,6 +316,9 @@ export class Visual implements IVisual {
 
     }
 
+    public destroy() {
+        console.log('be destroy')
+    }
     
     private addTooltip = () => {
                 $('th').each(function (index, element) {
