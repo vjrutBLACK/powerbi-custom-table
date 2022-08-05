@@ -44,6 +44,8 @@ export class Behavior<SelectableDataPointType extends BaseDataPoint> implements 
             console.log(sentDatumb) 
             const mouseEvent: MouseEvent = window.event as MouseEvent;
             mouseEvent && this.selectionHandler.handleSelection(sentDatumb, mouseEvent.ctrlKey);
+            $(d3.event.target.parentNode).children("*").css("opacity",1);
+
         });
     }
 
