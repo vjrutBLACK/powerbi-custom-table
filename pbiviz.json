@@ -4,7 +4,7 @@
         "displayName": "Table Plus",
         "guid": "TablePlus",
         "visualClassName": "Visual",
-        "version": "1.3.0",
+        "version": "2.0.0",
         "description": "Custom Table",
         "supportUrl": "https://community.powerbi.com",
         "gitHubUrl": ""

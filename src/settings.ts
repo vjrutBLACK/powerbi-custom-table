@@ -15,6 +15,7 @@ export class VisualSettings extends DataViewObjectsParser {
     public headerGridBorder: GridBorderConfig = new GridBorderConfig();
     public valueSectionGridBorder: GridBorderConfig = new GridBorderConfig();
     public gridOptions: GridOptions = new GridOptions();
+    public tableSize: TableSize = new TableSize();
 }
 
 export class dataPointSettings {
@@ -48,6 +49,10 @@ export class ValuesConfig {
     public fontSize: number = 10;
     public fontFamily: string = "Arial"
     public fontStyle: any = "italic"
+}
+
+export class TableSize {
+    public columnSizes: string = '[]'
 }
 
 export class HorizontalGridConfig {

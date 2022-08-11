@@ -5,7 +5,12 @@ table, th, td {
 }
 
 td { 
-    max-width: 400px;
+    // max-width: 400px;
+}
+
+span { 
+    display: inline-block;
+    max-width: 100px;
 }
 tr > th {
     background-color: rgb(0, 51, 145);
@@ -60,26 +65,30 @@ td, th > span {
 
 .sort-by-asc
 {
-    left: 3px;
+    position: absolute;
+    bottom: 1px;
+    left: auto;
     display: inline-block;
     width: 0;
     height: 0;
     border: solid 5px transparent;
-    margin: 4px 4px 0 3px;
+    margin: 4px 4px 1 0px;
     background: transparent;
-    border-bottom: solid 7px #fff;
+    border-bottom: solid 5px #fff;
     border-top-width: 0;
 }
 
 .sort-by-desc
 {   
-    left: 3px;
+    position: absolute;
+    bottom: 1px;
+    left: auto;
     display: inline-block;
     width: 0;
     height: 0;
     border: solid 5px transparent;
-    margin: 4px 4px 0 3px;
+    margin: 4px 4px 1 0px;
     background: transparent;
-    border-top: solid 7px #fff;
+    border-top: solid 5px #fff;
     border-bottom-width: 0;
 }
