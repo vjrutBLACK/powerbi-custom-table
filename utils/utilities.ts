@@ -31,7 +31,7 @@ export function addRow(el: HTMLTableRowElement, rowData, index: number, highLigh
                         .style('max-width', '10px')
                         .style('width', '400px')
 
-                        // .style('min-width', '400px')
+                        .style('min-width', '400px')
                         .html(displayedContent);
                 return;
             }
@@ -40,7 +40,7 @@ export function addRow(el: HTMLTableRowElement, rowData, index: number, highLigh
                 .append('td').attr('title', cleanString(colContent))
                 .style('max-width', '10px')
                     .style('width', '400px')
-                    // .style('min-width', '400px')
+                    .style('min-width', '400px')
                     .html(colContent);
                     return;
             }

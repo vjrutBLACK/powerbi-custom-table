@@ -10,7 +10,8 @@ td {
 
 span { 
     display: inline-block;
-    max-width: 100px;
+    min-width: 100px;
+    max-width: 200px;
 }
 tr > th {
     background-color: rgb(0, 51, 145);
@@ -40,7 +41,7 @@ td {
 }
 
 td, th > span {
-    // max-width: 200px;  
+    max-width: auto;  
     text-overflow: ellipsis;
     overflow:hidden ;
     white-space: nowrap;

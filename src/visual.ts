@@ -162,7 +162,7 @@ export class Visual implements IVisual {
             table.columns.forEach(
                 (col, cidx) => {
                     const columnName = Object.assign(col.expr).ref || Object.assign(col.expr).arg.ref
-                    if (columnName.indexOf('文') > -1 || columnName.indexOf('文_') > -1) highlightedContentColumnIndx.push(cidx)
+                    if (columnName === '文' || columnName.indexOf('文_') > -1) highlightedContentColumnIndx.push(cidx)
                     switch (columnName) {
                         case '正規語': {
                             highlightTextColumnIndex = cidx;
@@ -186,7 +186,7 @@ export class Visual implements IVisual {
                         }
                     }
 
-                     
+                    
                     tHead
                         .append('th')
                             .style('background-color', headerBackgroundColor)
@@ -198,11 +198,11 @@ export class Visual implements IVisual {
                             .style('font-style', this.settings.columnHeader.ilatic ? 'italic' : 'unset')
                             .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none')
                             // .style('min-width', INDEXColumnIndex > -1 ? 'auto' : '100px')
+                            .style('min-width', "auto")
                             // @ts-ignore
                             .style('width',highlightedContentColumnIndx.includes(cidx) ? "400px" : "auto")
-                            .style('width', this.columnSizes[columnName] || "auto")
-                            .style('min-width', this.columnSizes[columnName] || "auto")
-                            .style('max-width', this.columnSizes[columnName] || "auto")
+                            // .style('width', this.columnSizes[columnName] || "auto")
+                            // .style('max-width', this.columnSizes[columnName] || "auto")
                             .append('span')
                             .text(columnName)
                             ;
@@ -296,7 +296,7 @@ export class Visual implements IVisual {
         this.updatingBorder(tHead, tBody, this.settings.valueSectionGridBorder, 'value')
 
 
-        this.columnSizes = resizableGrid(document.getElementsByTagName('table')[0], this.columnSizes)
+        // this.columnSizes = resizableGrid(document.getElementsByTagName('table')[0], this.columnSizes)
 
 
 
@@ -361,7 +361,7 @@ export class Visual implements IVisual {
                 if (d.target.nodeName.toLowerCase() !== 'div') {
                     let isAscDirection = sortTable(indx);
                     $('th > i').remove();
-                    resizableGrid(document.getElementsByTagName('table')[0],this.columnSizes, true);
+                    // resizableGrid(document.getElementsByTagName('table')[0],this.columnSizes, true);
                     !isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
                 }
                 
