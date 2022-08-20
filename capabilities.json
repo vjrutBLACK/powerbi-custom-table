@@ -428,6 +428,62 @@
                     }
                 }
             }
+        },
+        "columnWidth": {
+            "displayName": "Column Width",
+            "properties": {
+                "col1": {
+                    "displayName": "1st Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                },"col2": {
+                    "displayName": "2nd Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                },"col3": {
+                    "displayName": "3rd Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                },"col4": {
+                    "displayName": "4th Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                },"col5": {
+                    "displayName": "5th Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                },"col6": {
+                    "displayName": "6th Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                },"col7": {
+                    "displayName": "7th Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                },"col8": {
+                    "displayName": "8th Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                },"col9": {
+                    "displayName": "9th Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                },"col10": {
+                    "displayName": "10th Column",
+                    "type": {
+                        "numeric": true
+                    }   
+                }
+            }
         }
     },
 

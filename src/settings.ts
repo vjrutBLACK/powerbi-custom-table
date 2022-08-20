@@ -16,6 +16,7 @@ export class VisualSettings extends DataViewObjectsParser {
     public valueSectionGridBorder: GridBorderConfig = new GridBorderConfig();
     public gridOptions: GridOptions = new GridOptions();
     public tableSize: TableSize = new TableSize();
+    public columnWidth: ColumnWidth = new ColumnWidth();
 }
 
 export class dataPointSettings {
@@ -79,4 +80,16 @@ export class GridBorderConfig implements IGridBorderConfig {
 export class GridOptions {
     public rowPadding: number = 1;
     public globalFontSize: number = 9
+}
+export class ColumnWidth {
+    public col1: number = 100;
+    public col2: number = 100;
+    public col3: number = 100;
+    public col4: number = 100;
+    public col5: number = 100;
+    public col6: number = 100;
+    public col7: number = 100;
+    public col8: number = 100;
+    public col9: number = 100;
+    public col10: number = 100
 }

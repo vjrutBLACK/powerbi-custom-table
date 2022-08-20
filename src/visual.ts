@@ -152,7 +152,12 @@ export class Visual implements IVisual {
             let tHead = this.container
                 .append('thead')
                 .append('tr');
-            
+            // @ts-ignore
+            let existedColumnWidth = Object.values(this.settings.columnWidth)
+            let notExistedColumn = existedColumnWidth.splice(table.columns.length || 0 , 10)
+            let existedColumnId = Object.keys(this.settings.columnWidth)
+            let notExistedColumnId = existedColumnId.splice(table.columns.length || 0, 10 )
+
 
             const headerTextColor = this.settings.columnHeader.headerTextColor
             const headerBackgroundColor = this.settings.columnHeader.headerBackgroundColor
@@ -161,6 +166,8 @@ export class Visual implements IVisual {
 
             table.columns.forEach(
                 (col, cidx) => {
+
+                    
                     const columnName = Object.assign(col.expr).ref || Object.assign(col.expr).arg.ref
                     if (columnName === '文' || columnName.indexOf('文_') > -1) highlightedContentColumnIndx.push(cidx)
                     switch (columnName) {
@@ -186,7 +193,6 @@ export class Visual implements IVisual {
                         }
                     }
 
-                    
                     tHead
                         .append('th')
                             .style('background-color', headerBackgroundColor)
@@ -197,12 +203,11 @@ export class Visual implements IVisual {
                             .style('font-weight', this.settings.columnHeader.bold ? 700 : 500)
                             .style('font-style', this.settings.columnHeader.ilatic ? 'italic' : 'unset')
                             .style('text-decoration', this.settings.columnHeader.underline ? 'underline' : 'none')
-                            // .style('min-width', INDEXColumnIndex > -1 ? 'auto' : '100px')
-                            .style('min-width', "auto")
                             // @ts-ignore
-                            .style('width',highlightedContentColumnIndx.includes(cidx) ? "400px" : "auto")
+                            .style('width', `${existedColumnWidth[cidx]}px`)
+                            .style('min-width', `${existedColumnWidth[cidx]}px`)
+                            .style('max-width', `${existedColumnWidth[cidx]}px`)
                             // .style('width', this.columnSizes[columnName] || "auto")
-                            // .style('max-width', this.columnSizes[columnName] || "auto")
                             .append('span')
                             .text(columnName)
                             ;
