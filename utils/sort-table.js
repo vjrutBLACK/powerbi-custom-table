@@ -27,7 +27,7 @@ export function sortTable(c) {
                     if (cleanString(a[c]) === cleanString(b[c])) {
                         return 0;
                     } else {
-                        return cleanString(a[c]).localeCompare(cleanString(b[c]), 'ja');
+                        return cleanString(a[c]).localeCompare(cleanString(b[c]), 'ja', {numeric: true});
                     }
                 }
             );

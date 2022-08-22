@@ -433,52 +433,52 @@
             "displayName": "Column Width",
             "properties": {
                 "col1": {
-                    "displayName": "1st Column",
+                    "displayName": "1st Column (px)",
                     "type": {
                         "numeric": true
                     }   
                 },"col2": {
-                    "displayName": "2nd Column",
+                    "displayName": "2nd Column (px)",
                     "type": {
                         "numeric": true
                     }   
                 },"col3": {
-                    "displayName": "3rd Column",
+                    "displayName": "3rd Column (px)",
                     "type": {
                         "numeric": true
                     }   
                 },"col4": {
-                    "displayName": "4th Column",
+                    "displayName": "4th Column (px)",
                     "type": {
                         "numeric": true
                     }   
                 },"col5": {
-                    "displayName": "5th Column",
+                    "displayName": "5th Column (px)",
                     "type": {
                         "numeric": true
                     }   
                 },"col6": {
-                    "displayName": "6th Column",
+                    "displayName": "6th Column (px)",
                     "type": {
                         "numeric": true
                     }   
                 },"col7": {
-                    "displayName": "7th Column",
+                    "displayName": "7th Column (px)",
                     "type": {
                         "numeric": true
                     }   
                 },"col8": {
-                    "displayName": "8th Column",
+                    "displayName": "8th Column (px)",
                     "type": {
                         "numeric": true
                     }   
                 },"col9": {
-                    "displayName": "9th Column",
+                    "displayName": "9th Column (px)",
                     "type": {
                         "numeric": true
                     }   
                 },"col10": {
-                    "displayName": "10th Column",
+                    "displayName": "10th Column (px)",
                     "type": {
                         "numeric": true
                     }   

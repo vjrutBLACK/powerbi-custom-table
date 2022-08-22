@@ -1,5 +1,5 @@
 {
-    "version": "2.1.0",
+    "version": "2.4.0",
     "author": {"name":"Microsoft","email":"pbicvsupport@microsoft.com"},
     "resources": [
         {
@@ -8,7 +8,7 @@
             "file": "resources/TablePlus.pbiviz.json"
         }
     ],
-    "visual": {"name":"Table Plus","displayName":"Table Plus","guid":"TablePlus","visualClassName":"Visual","version":"2.1.0","description":"Custom Table","supportUrl":"https://community.powerbi.com","gitHubUrl":""},
+    "visual": {"name":"Table Plus","displayName":"Table Plus","guid":"TablePlus","visualClassName":"Visual","version":"2.4.0","description":"Custom Table","supportUrl":"https://community.powerbi.com","gitHubUrl":""},
     "metadata": {
         "pbivizjson": {
             "resourceId": "rId0"

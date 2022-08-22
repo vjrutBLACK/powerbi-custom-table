@@ -209,6 +209,7 @@ export class Visual implements IVisual {
                             .style('max-width', `${existedColumnWidth[cidx]}px`)
                             // .style('width', this.columnSizes[columnName] || "auto")
                             .append('span')
+                            .style('max-width', `${existedColumnWidth[cidx]}px`)
                             .text(columnName)
                             ;
 
@@ -313,7 +314,7 @@ export class Visual implements IVisual {
             clearCatcherSelection: d3.select(this.target),
             elementsSelection: d3.selectAll('td')
         });
-        
+
         this.bindingHeaderClicking()
         this.addTooltip()
 
@@ -328,8 +329,7 @@ export class Visual implements IVisual {
     private addTooltip = () => {
                 $('th').each(function (index, element) {
                     $(this).removeAttr( "title" )
-                });
-        $('td').tooltip();
+                })
 
     }
     
@@ -366,6 +366,7 @@ export class Visual implements IVisual {
                 if (d.target.nodeName.toLowerCase() !== 'div') {
                     let isAscDirection = sortTable(indx);
                     $('th > i').remove();
+                    console.log(indx)
                     // resizableGrid(document.getElementsByTagName('table')[0],this.columnSizes, true);
                     !isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
                 }

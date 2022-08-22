@@ -17,6 +17,7 @@ export class VisualSettings extends DataViewObjectsParser {
     public gridOptions: GridOptions = new GridOptions();
     public tableSize: TableSize = new TableSize();
     public columnWidth: ColumnWidth = new ColumnWidth();
+    public sortingTable: SortingTable = new SortingTable();
 }
 
 export class dataPointSettings {
@@ -92,4 +93,9 @@ export class ColumnWidth {
     public col8: number = 100;
     public col9: number = 100;
     public col10: number = 100
+}
+
+export class SortingTable {
+    public sortType: string = "None";
+    public columnIndex: string = "0";
 }
