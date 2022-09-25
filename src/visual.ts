@@ -45,6 +45,7 @@ import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import * as d3select from 'd3-selection';
 import * as d3 from "d3";
 
+import VisualDataChangeOperationKind = powerbi.VisualDataChangeOperationKind;
 import $ from 'jquery';
 import { resizableGrid } from '../utils/resize-table'
 import ISelectionManager = powerbi.extensibility.ISelectionManager;
@@ -52,7 +53,7 @@ import ISelectionManager = powerbi.extensibility.ISelectionManager;
 export interface VisualDataPoint extends interactivitySelectionService.SelectableDataPoint {
     value: powerbi.PrimitiveValue;
 }
-import {sortTable} from "../utils/sort-table";
+import {sortTable, settingSortTable} from "../utils/sort-table";
 
 
 import { addRow, visualTransform } from '../utils/utilities'
@@ -67,6 +68,8 @@ export class Visual implements IVisual {
     private tableDefinition: any;
     private columnSizes = [];
     private events: IVisualEventService;
+    private windowsLoaded: number;
+    private updateCount: number;
     private selectionManager: ISelectionManager;
     private interactivity: interactivityBaseService.IInteractivityService<VisualDataPoint>;
 
@@ -76,6 +79,8 @@ export class Visual implements IVisual {
         this.host = options.host;
         this.events = options.host.eventService;
         this.selectionManager = this.host.createSelectionManager();
+        this.updateCount = 0;
+        this.windowsLoaded = 0;
 
         this.interactivity = interactivitySelectionService.createInteractivitySelectionService(this.host);
 
@@ -108,6 +113,16 @@ export class Visual implements IVisual {
         }
 
 
+        // if (options.operationKind == VisualDataChangeOperationKind.Create) {
+
+        // }
+    
+        // // on second or subsequent segments:
+        // if (options.operationKind == VisualDataChangeOperationKind.Segment) {
+            
+        // }
+
+
         /** Clear down existing plot */
             this.container.selectAll('*').remove();
 
@@ -126,6 +141,18 @@ export class Visual implements IVisual {
                 console.log('No data to draw table.');
                 return;
             }
+
+            console.log('Visual update', dataViews[0].metadata);
+            console.log('Update kind', options.operationKind);
+            if (options.operationKind === VisualDataChangeOperationKind.Create) {
+                this.windowsLoaded = 1;
+            } 
+            if (options.operationKind === VisualDataChangeOperationKind.Append) {
+                this.windowsLoaded += 1;
+            }
+
+            let rowCount = options.dataViews[0].table.rows.length;
+
             
         
         /** If we get this far, we can trust that we can work with the data! */
@@ -314,17 +341,48 @@ export class Visual implements IVisual {
             clearCatcherSelection: d3.select(this.target),
             elementsSelection: d3.selectAll('td')
         });
+        const sortType = this.settings.sortingTable.sortType;
+        const columnIndex = this.settings.sortingTable.columnIndex;
 
-        this.bindingHeaderClicking()
+
+        if (sortType !== 'None') {
+                settingSortTable(sortType, parseInt(columnIndex));
+                $('th > i').remove();
+                sortType === 'Descending' ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[columnIndex]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[columnIndex]) ;
+        }
+
+    let loadMoreData  = (dataViews, rowCount) => {
+        console.log($('#sandbox-host table').height() )
+        console.log($('#sandbox-host').scrollTop() )
+
+        if($('#sandbox-host').scrollTop() >= $('#sandbox-host table').height()*4/5 ) {
+            if (dataViews[0].metadata.segment) {
+                console.log(`Loading more data. ${rowCount} rows loaded so far (over ${this.windowsLoaded} fetches)...`)
+                let canFetchMore = this.host.fetchMoreData();
+                if (!canFetchMore) {
+                    console.log(`Memory limit hit after ${this.windowsLoaded} fetches. We managed to get ${rowCount} rows.`)
+                }
+            } else {
+                console.log(`We have all the data we can get (${rowCount} rows over ${this.windowsLoaded} fetches)!`)
+            }
+            $('#sandbox-host').unbind("scroll");
+        }
+    }
+
+
+        $('#sandbox-host').scroll(function() {
+            loadMoreData(dataViews,rowCount)
+        });
+       
+    
+        this.bindingHeaderClicking(dataViews[0], rowCount)
         this.addTooltip()
 
         console.log('Table rendered!');
 
     }
 
-    public destroy() {
-        console.log('be destroy')
-    }
+    
     
     private addTooltip = () => {
                 $('th').each(function (index, element) {
@@ -360,13 +418,15 @@ export class Visual implements IVisual {
     }
 
 
-    private bindingHeaderClicking () {
+    private bindingHeaderClicking (dataView, rowCount) {
         $('th').each((indx, th) => {
             $(th).on('click', (d) => {
+                
+            
+    
                 if (d.target.nodeName.toLowerCase() !== 'div') {
                     let isAscDirection = sortTable(indx);
                     $('th > i').remove();
-                    console.log(indx)
                     // resizableGrid(document.getElementsByTagName('table')[0],this.columnSizes, true);
                     !isAscDirection ? $( "<i class='sort-by-desc'></i>" ).prependTo( $('th')[indx]) :$("<i class='sort-by-asc'></i>" ).prependTo( $('th')[indx]) ;
                 }

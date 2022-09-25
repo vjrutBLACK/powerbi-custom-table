@@ -482,6 +482,84 @@
                     "type": {
                         "numeric": true
                     }   
+                },
+                "placeHolderText": {
+                    "displayName": "place holder",
+                    "type": {
+                        "text": true
+                    }   
+                }
+            }
+        },
+        "sortingTable": {
+            "displayName": "Table sorting",
+            "properties": {
+                "sortType": {
+                    "displayName": "Sort type",
+                    "type": {
+                    "enumeration": [
+                        {
+                            "displayName": "None",
+                            "description": "None",
+                            "value": "None"
+                        },{
+                            "displayName": "Ascending",
+                            "description": "Ascending",
+                            "value": "Ascending"
+                        },{
+                            "displayName": "Descending",
+                            "description": "Descending",
+                            "value": "Descending"
+                        }
+                    ]
+                }},
+                "columnIndex": {
+                    "displayName": "Sort column",
+                    "type": {
+                    "enumeration": [
+                        {
+                            "displayName": "1st column",
+                            "description": "1st column",
+                            "value": "0"
+                        },{
+                            "displayName": "2nd column",
+                            "description": "2nd column",
+                            "value": "1"
+                        },{
+                            "displayName": "3rd column",
+                            "description": "3rd column",
+                            "value": "2"
+                        },{
+                            "displayName": "4th column",
+                            "description": "4th column",
+                            "value": "3"
+                        },{
+                            "displayName": "5th column",
+                            "description": "5th column",
+                            "value": "4"
+                        },{
+                            "displayName": "6th column",
+                            "description": "6th column",
+                            "value": "5"
+                        },{
+                            "displayName": "7th column",
+                            "description": "7th column",
+                            "value": "6"
+                        },{
+                            "displayName": "8th column",
+                            "description": "8th column",
+                            "value": "7"
+                        },{
+                            "displayName": "9th column",
+                            "description": "9th column",
+                            "value": "8"
+                        },{
+                            "displayName": "10th column",
+                            "description": "10th",
+                            "value": "9"
+                        }
+                        ]
+                    }
                 }
             }
         }
@@ -497,7 +575,7 @@
                         "in": "values"
                     },
                     "dataReductionAlgorithm": {
-                        "top": {"count": 8000}
+                        "window": {"count": 100}
                     }
                 }
             }

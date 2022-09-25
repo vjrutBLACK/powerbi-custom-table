@@ -92,7 +92,7 @@ export class ColumnWidth {
     public col7: number = 100;
     public col8: number = 100;
     public col9: number = 100;
-    public col10: number = 100
+    public col10: number = 100;
 }
 
 export class SortingTable {
