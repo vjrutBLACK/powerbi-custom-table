@@ -142,8 +142,6 @@ export class Visual implements IVisual {
                 return;
             }
 
-            console.log('Visual update', dataViews[0].metadata);
-            console.log('Update kind', options.operationKind);
             if (options.operationKind === VisualDataChangeOperationKind.Create) {
                 this.windowsLoaded = 1;
             } 
@@ -352,8 +350,7 @@ export class Visual implements IVisual {
         }
 
     let loadMoreData  = (dataViews, rowCount) => {
-        console.log($('#sandbox-host table').height() )
-        console.log($('#sandbox-host').scrollTop() )
+
 
         if($('#sandbox-host').scrollTop() >= $('#sandbox-host table').height()*4/5 ) {
             if (dataViews[0].metadata.segment) {
